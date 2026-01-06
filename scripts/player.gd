@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-@onready var bow: Node = $WeaponSocket/Bow
+@onready var weapon_manager: WeaponManager = $WeaponManager
 
 @export var move_speed: float = 260.0
 @export var jump_velocity: float = -480.0
@@ -49,13 +49,13 @@ func _physics_process(delta: float) -> void:
 	# -----------------
 	# Manual fire only when autofire is OFF
 	if not _auto_fire_enabled and Input.is_action_just_pressed("fire"):
-		if bow != null:
-			bow.fire()
+		if weapon_manager != null:
+			weapon_manager.try_fire()
 
-	# Autofire when enabled (hands-free)
+	# Autofire when enabled
 	if _auto_fire_enabled:
-		if bow != null:
-			bow.fire()
+		if weapon_manager != null:
+			weapon_manager.try_fire()
 
 
 func _try_fire() -> void:

@@ -1,56 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://blxypbuxj31em"]
+[gd_scene load_steps=6 format=3 uid="uid://blxypbuxj31em"]
 
 [ext_resource type="Script" uid="uid://b0dlwj14qvmlx" path="res://scripts/player.gd" id="1_g2els"]
+[ext_resource type="Script" uid="uid://bricsnrakdnth" path="res://scripts/WeaponManager.gd" id="2_dqkch"]
 [ext_resource type="Texture2D" uid="uid://d18a35ch3wai7" path="res://assets/player/pixelplayer.png" id="2_g2els"]
-[ext_resource type="Texture2D" uid="uid://cxtpemxga4yw3" path="res://assets/projectiles/pellet.png" id="2_qlg0r"]
 [ext_resource type="PackedScene" uid="uid://v6j4d7i5irch" path="res://scenes/bow.tscn" id="4_dqkch"]
-[ext_resource type="PackedScene" uid="uid://d1asvcs5n4um5" path="res://scenes/arrow.tscn" id="5_qlg0r"]
-
-[sub_resource type="GDScript" id="GDScript_tuyoq"]
-script/source = "extends Area2D
-
-@export var speed: float = 800.0
-@export var lifetime: float = 2.0
-@export var damage: int = 5
-
-# Which physics layer the player is on (default: 1)
-@export var player_layer: int = 1
-
-var direction: Vector2 = Vector2.RIGHT
-
-func _ready() -> void:
-	# Never collide with the player
-	set_collision_mask_value(player_layer, false)
-
-	# Auto-despawn
-	get_tree().create_timer(lifetime).timeout.connect(queue_free)
-
-func _physics_process(delta: float) -> void:
-	global_position += direction.normalized() * speed * delta
-
-func _on_body_entered(body: Node) -> void:
-	if body.has_method(\"take_damage\"):
-		body.take_damage(damage)
-
-	queue_free()
-"
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_q3m7n"]
-radius = 3.0
-height = 12.0
-
-[sub_resource type="PackedScene" id="PackedScene_fjrip"]
-_bundled = {
-"conn_count": 1,
-"conns": PackedInt32Array(0, 0, 13, 12, 2, 0, 0),
-"editable_instances": [],
-"names": PackedStringArray("Projectile", "collision_layer", "collision_mask", "script", "damage", "Area2D", "Sprite2D", "rotation", "scale", "texture", "CollisionShape2D", "shape", "_on_body_entered", "body_entered"),
-"node_count": 3,
-"node_paths": [],
-"nodes": PackedInt32Array(-1, -1, 5, 0, -1, 4, 1, 0, 2, 1, 3, 2, 4, 3, 0, 0, 0, 6, 6, -1, 3, 7, 4, 8, 5, 9, 6, 0, 0, 0, 10, 10, -1, 2, 7, 4, 11, 7, 0),
-"variants": [2, 12, SubResource("GDScript_tuyoq"), 20, 1.5707964, Vector2(0.234375, 0.328125), ExtResource("2_qlg0r"), SubResource("CapsuleShape2D_q3m7n")],
-"version": 3
-}
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tuyoq"]
 size = Vector2(23, 46)
@@ -58,7 +11,10 @@ size = Vector2(23, 46)
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_mask = 12
 script = ExtResource("1_g2els")
-projectile_scene = SubResource("PackedScene_fjrip")
+
+[node name="WeaponManager" type="Node2D" parent="."]
+script = ExtResource("2_dqkch")
+slot_1_scene = ExtResource("4_dqkch")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 6)
@@ -68,7 +24,4 @@ shape = SubResource("RectangleShape2D_tuyoq")
 texture = ExtResource("2_g2els")
 
 [node name="WeaponSocket" type="Node2D" parent="."]
-
-[node name="Bow" parent="WeaponSocket" instance=ExtResource("4_dqkch")]
-position = Vector2(21, 13)
-arrow_scene = ExtResource("5_qlg0r")
+position = Vector2(19, 12)

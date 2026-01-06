@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://dhc5jcnt2k0de"]
+
+[ext_resource type="Script" uid="uid://bqfkdj4lqcy3l" path="res://scripts/BaseWeapon.gd" id="1_2port"]
+[ext_resource type="PackedScene" uid="uid://d1asvcs5n4um5" path="res://scenes/arrow.tscn" id="2_b74a3"]
+[ext_resource type="Texture2D" uid="uid://cdyiu066hlucs" path="res://assets/weapons/basic bow/basicbow.png" id="3_qnoub"]
+
+[node name="Bow" type="Node2D"]
+script = ExtResource("1_2port")
+projectile_scene = ExtResource("2_b74a3")
+base_damage = 10
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-2.999998, 1.9073486e-06)
+scale = Vector2(0.46875, 0.4375)
+texture = ExtResource("3_qnoub")
+
+[node name="Muzzle" type="Marker2D" parent="."]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://cgr178osx736x"]
+[gd_scene load_steps=9 format=3 uid="uid://cgr178osx736x"]
 
 [ext_resource type="Texture2D" uid="uid://d1u5tbpyycv63" path="res://assets/environment/dirtandgrass.png" id="1_4wyf3"]
 [ext_resource type="Script" uid="uid://dw3tyspqf6d1k" path="res://scripts/PlayerUI.gd" id="1_71j4m"]
@@ -9,43 +9,59 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o5qli"]
 size = Vector2(2364, 81)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_71j4m"]
+bg_color = Color(1, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qfnet"]
+bg_color = Color(0.8745098, 0, 0.023529412, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
 [node name="World" type="Node2D"]
 
 [node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(292, 440)
 collision_layer = 5
 
 [node name="Sprite2D" type="Sprite2D" parent="Floor"]
-position = Vector2(45.5, 233.5)
 scale = Vector2(27.640623, 1.296875)
 texture = ExtResource("1_4wyf3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
-position = Vector2(-2, 233.5)
 shape = SubResource("RectangleShape2D_o5qli")
 
 [node name="Player" parent="." instance=ExtResource("1_rwgxs")]
 position = Vector2(334, 159)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
+visible = false
 position = Vector2(0, 6)
 
 [node name="UI" type="CanvasLayer" parent="Player/Camera2D"]
 script = ExtResource("1_71j4m")
 
 [node name="PlayerHealthBar" type="ProgressBar" parent="Player/Camera2D/UI"]
-offset_right = 159.0
-offset_bottom = 27.0
+offset_left = 3.0
+offset_top = 4.0
+offset_right = 92.0
+offset_bottom = 12.0
+theme_override_styles/background = SubResource("StyleBoxFlat_71j4m")
+theme_override_styles/fill = SubResource("StyleBoxFlat_qfnet")
 show_percentage = false
 
 [node name="Enemies" type="Node2D" parent="."]
+position = Vector2(990, 253)
 
 [node name="EnemySpawner" type="Node2D" parent="."]
+position = Vector2(890, 290)
 script = ExtResource("3_4wyf3")
 enemy_scenes = Array[PackedScene]([ExtResource("2_4wyf3")])
 spawn_interval = 5.0
 
 [node name="SpawnPoints" type="Node2D" parent="EnemySpawner"]
-position = Vector2(367, 136)
+position = Vector2(-1, 42)
 
 [node name="Spawn1" type="Marker2D" parent="EnemySpawner/SpawnPoints"]
 position = Vector2(190, 2)
@@ -54,4 +70,4 @@ position = Vector2(190, 2)
 position = Vector2(140, 2)
 
 [node name="Spawn3" type="Marker2D" parent="EnemySpawner/SpawnPoints"]
-position = Vector2(90, 20)
+position = Vector2(90, 5)

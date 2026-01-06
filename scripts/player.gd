@@ -10,13 +10,16 @@ extends CharacterBody2D
 var _auto_fire_enabled: bool = false
 var _fire_cooldown: float = 0.0
 
-@export var max_health: float = 100.0
-var health: float
+
+signal health_changed(current: int, max: int)
+
+@export var max_health: int = 100
+var health: int
 
 
 func _ready() -> void:
 	health = max_health
-
+	emit_signal("health_changed", health, max_health)
 
 
 
@@ -63,11 +66,16 @@ func _try_fire() -> void:
 
 
 # Player takes damage
-func take_damage(amount: float) -> void:
-	health = max(health - amount, 0.0)
+func take_damage(amount: int) -> void:
+	health = max(health - amount, 0)
+	emit_signal("health_changed", health, max_health)
 
 	if health <= 0:
 		die()
+
+func heal(amount: int) -> void:
+	health = min(health + amount, max_health)
+	emit_signal("health_changed", health, max_health)
 
 # Player death
 func die() -> void:

@@ -11,6 +11,7 @@ class_name BaseEnemy
 
 @onready var contact_area: Area2D = $ContactArea
 
+signal health_changed(current: int, max: int)
 var health: int
 var player: Node2D
 
@@ -18,6 +19,7 @@ var _damage_accumulator: float = 0.0
 
 func _ready() -> void:
 	health = max_health
+	emit_signal("health_changed", health, max_health)
 	player = get_tree().get_first_node_in_group("player") as Node2D
 
 	# Ensure area overlap checks work reliably
@@ -66,6 +68,8 @@ func apply_contact_damage(delta: float) -> void:
 
 func take_damage(amount: int) -> void:
 	health -= amount
+	health = max(health, 0)
+	emit_signal("health_changed", health, max_health)
 	if health <= 0:
 		die()
 

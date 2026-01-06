@@ -18,7 +18,12 @@ func _ready() -> void:
 	get_tree().create_timer(lifetime).timeout.connect(queue_free)
 
 func _physics_process(delta: float) -> void:
-	global_position += direction.normalized() * speed * delta
+	var dir := direction.normalized()
+	global_position += dir * speed * delta
+
+	# Face travel direction (sprite must be drawn pointing RIGHT by default)
+	rotation = dir.angle()
+
 
 func apply_weapon_damage(weapon_damage: int) -> void:
 	damage = int(round(weapon_damage * damage_multiplier)) + flat_damage_bonus

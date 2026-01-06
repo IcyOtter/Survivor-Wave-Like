@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://cq8lvqa2wju0w"]
+
+[ext_resource type="Script" uid="uid://t251hpwfilyd" path="res://scripts/BaseEnemy.gd" id="1_md0e3"]
+[ext_resource type="Texture2D" uid="uid://bfnao0om1m8kk" path="res://assets/enemies/slime.png" id="2_4ra3w"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_md0e3"]
+size = Vector2(41, 41)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4ra3w"]
+size = Vector2(44, 32.666664)
+
+[node name="Enemy" type="CharacterBody2D"]
+collision_layer = 8
+collision_mask = 5
+script = ExtResource("1_md0e3")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -32)
+texture = ExtResource("2_4ra3w")
+
+[node name="DamageArea" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, -21)
+shape = SubResource("RectangleShape2D_md0e3")
+
+[node name="ContactArea" type="Area2D" parent="."]
+position = Vector2(0, -15.5)
+scale = Vector2(1.5, 1.5)
+collision_layer = 0
+
+[node name="Contact" type="CollisionShape2D" parent="ContactArea"]
+position = Vector2(0, -6.333335)
+shape = SubResource("RectangleShape2D_4ra3w")

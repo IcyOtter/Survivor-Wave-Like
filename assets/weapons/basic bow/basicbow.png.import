@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://rphyweeg3nqr"
-path="res://.godot/imported/player.png-e230e05e2d932a710303ee07f401e40f.ctex"
+uid="uid://cdyiu066hlucs"
+path="res://.godot/imported/basicbow.png-81ae743bcf5eb7cf832b0b878296badd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/player/player.png"
-dest_files=["res://.godot/imported/player.png-e230e05e2d932a710303ee07f401e40f.ctex"]
+source_file="res://assets/weapons/basic bow/basicbow.png"
+dest_files=["res://.godot/imported/basicbow.png-81ae743bcf5eb7cf832b0b878296badd.ctex"]
 
 [params]
 

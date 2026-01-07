@@ -1,10 +1,13 @@
-[gd_scene load_steps=9 format=3 uid="uid://cgr178osx736x"]
+[gd_scene load_steps=12 format=3 uid="uid://cgr178osx736x"]
 
 [ext_resource type="Texture2D" uid="uid://d1u5tbpyycv63" path="res://assets/environment/dirtandgrass.png" id="1_4wyf3"]
 [ext_resource type="Script" uid="uid://dw3tyspqf6d1k" path="res://scripts/PlayerUI.gd" id="1_71j4m"]
 [ext_resource type="PackedScene" uid="uid://blxypbuxj31em" path="res://scenes/player.tscn" id="1_rwgxs"]
 [ext_resource type="PackedScene" uid="uid://cq8lvqa2wju0w" path="res://scenes/enemy.tscn" id="2_4wyf3"]
 [ext_resource type="Script" uid="uid://dxk8c0lhw2hgk" path="res://scripts/enemy_spawner.gd" id="3_4wyf3"]
+[ext_resource type="Script" uid="uid://dkj8v2fhpdtl1" path="res://scripts/InventoryUI.gd" id="4_4mrxx"]
+[ext_resource type="PackedScene" uid="uid://bmiu262jolk0b" path="res://scenes/WeaponPickup.tscn" id="7_7r4gi"]
+[ext_resource type="PackedScene" uid="uid://v6j4d7i5irch" path="res://scenes/bow.tscn" id="8_w7kh3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o5qli"]
 size = Vector2(2364, 81)
@@ -51,6 +54,39 @@ theme_override_styles/background = SubResource("StyleBoxFlat_71j4m")
 theme_override_styles/fill = SubResource("StyleBoxFlat_qfnet")
 show_percentage = false
 
+[node name="HUD" type="Control" parent="Player/Camera2D/UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1151.0
+offset_bottom = 399.0
+
+[node name="InventoryPanel" type="Panel" parent="Player/Camera2D/UI/HUD"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 15.0
+offset_right = 418.0
+offset_bottom = 395.0
+script = ExtResource("4_4mrxx")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Player/Camera2D/UI/HUD/InventoryPanel"]
+layout_mode = 0
+offset_right = 375.0
+offset_bottom = 380.0
+
+[node name="Label" type="Label" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer"]
+layout_mode = 2
+text = "Inventory"
+
+[node name="HintLabel" type="Label" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer"]
+layout_mode = 2
+accessibility_name = "HintLabel"
+text = "Click to equip. Esc/I to close."
+
+[node name="WeaponList" type="ItemList" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer"]
+layout_mode = 2
+accessibility_name = "WeaponList"
+theme_override_colors/font_color = Color(0.9393102, 0.95344514, 1, 1)
+
 [node name="Enemies" type="Node2D" parent="."]
 position = Vector2(990, 253)
 
@@ -59,6 +95,7 @@ position = Vector2(890, 290)
 script = ExtResource("3_4wyf3")
 enemy_scenes = Array[PackedScene]([ExtResource("2_4wyf3")])
 spawn_interval = 5.0
+spawn_enabled = false
 
 [node name="SpawnPoints" type="Node2D" parent="EnemySpawner"]
 position = Vector2(-1, 42)
@@ -71,3 +108,8 @@ position = Vector2(140, 2)
 
 [node name="Spawn3" type="Marker2D" parent="EnemySpawner/SpawnPoints"]
 position = Vector2(90, 5)
+
+[node name="WeaponPickup" parent="." instance=ExtResource("7_7r4gi")]
+position = Vector2(512, 373)
+weapon_scene = ExtResource("8_w7kh3")
+display_name = "Normal Bow"

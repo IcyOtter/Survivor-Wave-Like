@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 @onready var weapon_manager: WeaponManager = $WeaponManager
+@onready var pickup_detector: Area2D = $PickupDetector
 
 @export var move_speed: float = 260.0
 @export var jump_velocity: float = -480.0
@@ -9,6 +10,8 @@ extends CharacterBody2D
 
 var _auto_fire_enabled: bool = false
 var _fire_cooldown: float = 0.0
+
+var _nearby_pickups: Array[WeaponPickup] = []
 
 
 signal health_changed(current: int, max: int)
@@ -20,7 +23,8 @@ var health: int
 func _ready() -> void:
 	health = max_health
 	emit_signal("health_changed", health, max_health)
-
+	pickup_detector.area_entered.connect(_on_pickup_area_entered)
+	pickup_detector.area_exited.connect(_on_pickup_area_exited)
 
 
 func _physics_process(delta: float) -> void:
@@ -57,11 +61,55 @@ func _physics_process(delta: float) -> void:
 		if weapon_manager != null:
 			weapon_manager.try_fire()
 
+		# -----------------
+	# Pickup (E)
+	# -----------------
+	if Input.is_action_just_pressed("interact"):
+		_try_pickup_weapon()
+
 
 func _try_fire() -> void:
 
 	if _fire_cooldown > 0.0:
 		return
+
+func _on_pickup_area_entered(area: Area2D) -> void:
+	if area is WeaponPickup:
+		_nearby_pickups.append(area)
+
+func _on_pickup_area_exited(area: Area2D) -> void:
+	if area is WeaponPickup:
+		_nearby_pickups.erase(area)
+
+func _try_pickup_weapon() -> void:
+	# Remove invalid references
+	_nearby_pickups = _nearby_pickups.filter(func(p): return p != null and is_instance_valid(p))
+
+	if _nearby_pickups.is_empty():
+		return
+
+	# Pick nearest
+	var nearest: WeaponPickup = null
+	var best_dist := INF
+
+	for p in _nearby_pickups:
+		var d := global_position.distance_squared_to(p.global_position)
+		if d < best_dist:
+			best_dist = d
+			nearest = p
+
+	if nearest == null:
+		return
+
+	var path := nearest.get_weapon_path()
+	if path == "":
+		push_warning("Pickup has no weapon path (is the weapon scene saved to disk?)")
+		return
+
+	var added := weapon_manager.add_weapon_path(path, false)
+	if added:
+		print("Picked up:", nearest.get_display_name())
+		nearest.queue_free()
 
 
 

@@ -2,13 +2,15 @@ extends Node
 class_name WeaponManager
 
 signal weapon_equipped(weapon: Node)
+signal inventory_updated()
 
 @export var weapon_socket_path: NodePath = ^"../WeaponSocket"
 
-# Drag your weapon scenes here in the Inspector (Bow.tscn, Staff.tscn, etc.)
-@export var slot_1_scene: PackedScene
-@export var slot_2_scene: PackedScene
-@export var slot_3_scene: PackedScene
+# Optional: starting weapon(s)
+@export var starting_weapons: Array[PackedScene] = []
+
+# Inventory resource (can be saved later)
+@export var inventory: WeaponInventory
 
 var _socket: Node2D
 var current_weapon: BaseWeapon = null
@@ -19,32 +21,74 @@ func _ready() -> void:
 		push_error("WeaponManager: WeaponSocket not found. Check weapon_socket_path.")
 		return
 
-	# Equip slot 1 by default if available
-	if slot_1_scene != null:
-		equip_scene(slot_1_scene)
+	if inventory == null:
+		inventory = WeaponInventory.new()
 
-func _process(_delta: float) -> void:
-	if Input.is_action_just_pressed("equip_slot_1"):
-		equip_slot(1)
-	elif Input.is_action_just_pressed("equip_slot_2"):
-		equip_slot(2)
-	elif Input.is_action_just_pressed("equip_slot_3"):
-		equip_slot(3)
+	if not inventory.inventory_changed.is_connected(_on_inventory_changed):
+		inventory.inventory_changed.connect(_on_inventory_changed)
 
-func equip_slot(slot: int) -> void:
-	match slot:
-		1:
-			if slot_1_scene: equip_scene(slot_1_scene)
-		2:
-			if slot_2_scene: equip_scene(slot_2_scene)
-		3:
-			if slot_3_scene: equip_scene(slot_3_scene)
+	# Add starting weapons into inventory
+	for w in starting_weapons:
+		if w != null and w.resource_path != "":
+			inventory.add_weapon(w.resource_path)
 
-func equip_scene(scene: PackedScene) -> void:
+	# Auto-equip first weapon if any
+	if inventory.weapon_paths.size() > 0 and inventory.equipped_index == -1:
+		equip_index(0)
+
+func _on_inventory_changed() -> void:
+	emit_signal("inventory_updated")
+
+func try_fire() -> void:
+	if current_weapon != null:
+		current_weapon.fire()
+
+func add_weapon_scene(scene: PackedScene, auto_equip: bool = false) -> bool:
+	if scene == null:
+		return false
+	if scene.resource_path == "":
+		push_warning("WeaponManager: Weapon scene has no resource_path. Save the .tscn to disk.")
+		return false
+
+	var added := inventory.add_weapon(scene.resource_path)
+
+	# Only equip if explicitly requested
+	if added and auto_equip:
+		equip_index(inventory.weapon_paths.size() - 1)
+
+	return added
+
+func add_weapon_path(path: String, auto_equip: bool = false) -> bool:
+	var added := inventory.add_weapon(path)
+
+	# Only equip if explicitly requested
+	if added and auto_equip:
+		equip_index(inventory.weapon_paths.size() - 1)
+
+	return added
+
+
+func equip_index(index: int) -> void:
+	if inventory == null:
+		return
+	if index < 0 or index >= inventory.weapon_paths.size():
+		return
+
+	var path := inventory.weapon_paths[index]
+	var scene := load(path) as PackedScene
+	if scene == null:
+		push_warning("WeaponManager: Could not load weapon scene at path: %s" % path)
+		return
+
+	_equip_scene(scene)
+	inventory.equipped_index = index
+	emit_signal("inventory_updated")
+
+func _equip_scene(scene: PackedScene) -> void:
 	if _socket == null or scene == null:
 		return
 
-	# Remove existing weapon instance
+	# Remove current weapon instance
 	for child in _socket.get_children():
 		child.queue_free()
 
@@ -57,6 +101,3 @@ func equip_scene(scene: PackedScene) -> void:
 
 	emit_signal("weapon_equipped", weapon_node)
 
-func try_fire() -> void:
-	if current_weapon != null:
-		current_weapon.fire()

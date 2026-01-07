@@ -3,25 +3,32 @@
 [ext_resource type="Script" uid="uid://b0dlwj14qvmlx" path="res://scripts/player.gd" id="1_g2els"]
 [ext_resource type="Script" uid="uid://bricsnrakdnth" path="res://scripts/WeaponManager.gd" id="2_dqkch"]
 [ext_resource type="Texture2D" uid="uid://d18a35ch3wai7" path="res://assets/player/pixelplayer.png" id="2_g2els"]
-[ext_resource type="PackedScene" uid="uid://v6j4d7i5irch" path="res://scenes/bow.tscn" id="4_dqkch"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tuyoq"]
 size = Vector2(23, 46)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qhqgy"]
+radius = 26.076809
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_mask = 12
 script = ExtResource("1_g2els")
 
-[node name="WeaponManager" type="Node2D" parent="."]
-script = ExtResource("2_dqkch")
-slot_1_scene = ExtResource("4_dqkch")
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_g2els")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 6)
 shape = SubResource("RectangleShape2D_tuyoq")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_g2els")
+[node name="PickupDetector" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PickupDetector"]
+position = Vector2(0, 5)
+shape = SubResource("CircleShape2D_qhqgy")
+
+[node name="WeaponManager" type="Node2D" parent="."]
+script = ExtResource("2_dqkch")
 
 [node name="WeaponSocket" type="Node2D" parent="."]
 position = Vector2(19, 12)

@@ -1,12 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://dorne3gevs8gq"]
+[gd_scene load_steps=3 format=3 uid="uid://dorne3gevs8gq"]
 
 [ext_resource type="Script" uid="uid://b1ehrbjb8pbdf" path="res://scripts/ProjectileWeapon.gd" id="1_41dtp"]
 [ext_resource type="Texture2D" uid="uid://cdyiu066hlucs" path="res://assets/weapons/basic bow/basicbow.png" id="1_vt0lb"]
-[ext_resource type="PackedScene" uid="uid://d1asvcs5n4um5" path="res://scenes/arrow.tscn" id="2_6jj7m"]
 
 [node name="BasicBow" type="Node2D"]
 script = ExtResource("1_41dtp")
-projectile_scene = ExtResource("2_6jj7m")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(-2.999998, 1.9073486e-06)

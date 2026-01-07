@@ -2,6 +2,8 @@ extends Node2D
 class_name BaseWeapon
 
 @export var item_def: ItemDefinition
+var weapon_manager: WeaponManager = null
+
 
 # These are derived from item_def; do not edit per weapon scene anymore.
 var fire_rate: float = 4.0

@@ -2,7 +2,7 @@ extends Panel
 class_name EquipmentUI
 
 @onready var weapon_value: Label = $VBoxContainer/WeaponRow/WeaponValue
-@onready var unequip_button: Button = $VBoxContainer/ButtonsRow/UnequipButton
+@onready var unequip_weapon_button: Button = $VBoxContainer/ButtonsRow/UnequipWeaponButton
 @onready var close_button: Button = $VBoxContainer/ButtonsRow/CloseButton
 
 var _weapon_manager: WeaponManager = null
@@ -14,8 +14,11 @@ func _ready() -> void:
 
 	_bind_weapon_manager()
 
-	unequip_button.pressed.connect(_on_unequip_pressed)
-	close_button.pressed.connect(_on_close_pressed)
+	if not unequip_weapon_button.pressed.is_connected(_on_unequip_weapon_pressed):
+		unequip_weapon_button.pressed.connect(_on_unequip_weapon_pressed)
+
+	if not close_button.pressed.is_connected(_on_close_pressed):
+		close_button.pressed.connect(_on_close_pressed)
 
 	_refresh()
 
@@ -48,19 +51,20 @@ func _on_inventory_updated() -> void:
 func _refresh() -> void:
 	if _weapon_manager == null or _weapon_manager.inventory == null:
 		weapon_value.text = "(none)"
-		unequip_button.disabled = true
+		unequip_weapon_button.disabled = true
 		return
 
 	var inv := _weapon_manager.inventory
 
+	# Weapon slot
 	if inv.has_equipped_weapon():
 		weapon_value.text = inv.get_equipped_weapon_name()
-		unequip_button.disabled = false
+		unequip_weapon_button.disabled = false
 	else:
 		weapon_value.text = "(none)"
-		unequip_button.disabled = true
+		unequip_weapon_button.disabled = true
 
-func _on_unequip_pressed() -> void:
+func _on_unequip_weapon_pressed() -> void:
 	if _weapon_manager != null:
 		_weapon_manager.unequip()
 

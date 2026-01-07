@@ -105,29 +105,39 @@ func _spawn_pickup(entry: DropEntry) -> void:
 		push_warning("Enemy drop: pickup_scene is not an ItemPickup.")
 		return
 
-	# Configure the pickup from the ItemDefinition resource
+	# Configure the pickup
 	pickup.item_def = entry.item_def
 	pickup.quantity = max(entry.quantity, 1)
 
-	# Raycast down to place on ground
-	var ray_from := global_position + Vector2(0, -16)
-	var ray_to := ray_from + Vector2(0, 800)
+	# Find final position (your raycast-to-ground logic)
+	var start_pos := global_position + Vector2(0, -16)
 
 	var space := get_world_2d().direct_space_state
-	var query := PhysicsRayQueryParameters2D.create(ray_from, ray_to)
+	var query := PhysicsRayQueryParameters2D.create(
+		start_pos,
+		start_pos + Vector2(0, 800)
+	)
 	query.collision_mask = GROUND_MASK
 	query.exclude = [self]
 
 	var result := space.intersect_ray(query)
 
-	var final_pos := global_position + Vector2(0, -24) # fallback
-
+	var final_pos := start_pos
 	if result.size() > 0:
-		var hit_pos: Vector2 = result["position"]
-		final_pos = hit_pos - Vector2(0, drop_clearance)
+		final_pos = result["position"] - Vector2(0, drop_clearance)
 
-	get_parent().add_child(pickup)
-	pickup.global_position = final_pos
+	# IMPORTANT: defer adding and positioning to avoid "flushing queries" error
+	var parent := get_parent()
+	if parent == null:
+		parent = get_tree().current_scene
+
+	parent.call_deferred("add_child", pickup)
+	pickup.set_deferred("global_position", final_pos)
+
+	# If your ItemPickup has monitoring enabled/disabled in code, defer it too:
+	# pickup.set_deferred("monitoring", true)
+	# pickup.set_deferred("monitorable", true)
+
 
 
 func _debug_draw_ray(from: Vector2, to: Vector2, hit: bool) -> void:

@@ -1,35 +1,33 @@
 extends Area2D
 class_name BaseProjectile
 
-@export var speed: float = 900.0
-@export var lifetime: float = 2.0
-
-# Projectile-specific damage modifiers
-@export var damage_multiplier: float = 1.0   # e.g. 1.25 for magic bolt
-@export var flat_damage_bonus: int = 0        # e.g. +2 for heavy arrow
-
 @export var ignore_layer: int = 1
 
 var direction: Vector2 = Vector2.RIGHT
-var damage: int = 0   # FINAL damage, set by weapon
+var speed: float = 900.0
+var lifetime: float = 2.0
+var rotate_to_direction: bool = true
+
+# Damage is set by the weapon only
+var damage: int = 0
 
 func _ready() -> void:
 	set_collision_mask_value(ignore_layer, false)
 	get_tree().create_timer(lifetime).timeout.connect(queue_free)
 
 func _physics_process(delta: float) -> void:
-	var dir := direction.normalized()
-	global_position += dir * speed * delta
+	global_position += direction.normalized() * speed * delta
 
-	# Face travel direction (sprite must be drawn pointing RIGHT by default)
-	rotation = dir.angle()
+	if rotate_to_direction and direction.length() > 0.0001:
+		rotation = direction.angle()
 
-
-func apply_weapon_damage(weapon_damage: int) -> void:
-	damage = int(round(weapon_damage * damage_multiplier)) + flat_damage_bonus
+func configure(speed_in: float, lifetime_in: float, rotate_in: bool, damage_in: int) -> void:
+	speed = speed_in
+	lifetime = lifetime_in
+	rotate_to_direction = rotate_in
+	damage = damage_in
 
 func _on_body_entered(body: Node) -> void:
 	if body.has_method("take_damage"):
-		body.take_damage(damage)
+		body.call("take_damage", damage)
 	queue_free()
-

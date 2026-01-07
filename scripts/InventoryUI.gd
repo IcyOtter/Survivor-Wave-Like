@@ -61,6 +61,7 @@ func _refresh() -> void:
 	if _weapon_manager == null or _weapon_manager.inventory == null:
 		hint_label.text = "Inventory not available."
 		equip_button.disabled = true
+		equip_button.text = "Equip"
 		return
 
 	var inv := _weapon_manager.inventory
@@ -70,25 +71,44 @@ func _refresh() -> void:
 		var qty := inv.get_item_qty(i)
 		weapon_list.add_item("%s  x%d" % [item_name, qty])
 
-	# Enable equip only if something is selected (and selection is a weapon)
+	# Button enable + label based on selection
+	_update_equip_button_state()
+
+	# Equipped status
+	var weapon_text := "(none)"
+	if inv.has_equipped_weapon():
+		weapon_text = inv.get_equipped_weapon_name()
+
+
+	hint_label.text = "Items: %d | Weapon: %s" % [inv.items.size(), weapon_text]
+
+func _on_item_selected(_index: int) -> void:
+	_update_equip_button_state()
+
+func _update_equip_button_state() -> void:
+	if _weapon_manager == null or _weapon_manager.inventory == null:
+		equip_button.disabled = true
+		equip_button.text = "Equip"
+		return
+
+	var inv := _weapon_manager.inventory
 	var selected := weapon_list.get_selected_items()
 	if selected.is_empty():
 		equip_button.disabled = true
-	else:
-		equip_button.disabled = inv.get_item_type(selected[0]) != "weapon"
-
-	var equipped_text := "(none)"
-	if inv.has_equipped_weapon():
-		equipped_text = inv.get_equipped_weapon_name()
-
-	hint_label.text = "Items: %d | Equipped: %s" % [inv.items.size(), equipped_text]
-
-func _on_item_selected(index: int) -> void:
-	if _weapon_manager == null or _weapon_manager.inventory == null:
-		equip_button.disabled = true
+		equip_button.text = "Equip"
 		return
 
-	equip_button.disabled = _weapon_manager.inventory.get_item_type(index) != "weapon"
+	var index := selected[0]
+	var t := inv.get_item_type(index)
+
+	var can_equip := (t == "weapon")
+	equip_button.disabled = not can_equip
+
+	# Optional UX: change button text based on item type
+	if t == "weapon":
+		equip_button.text = "Equip Weapon"
+	else:
+		equip_button.text = "Equip"
 
 func _on_equip_pressed() -> void:
 	if _weapon_manager == null or _weapon_manager.inventory == null:
@@ -96,20 +116,27 @@ func _on_equip_pressed() -> void:
 		return
 
 	var selected := weapon_list.get_selected_items()
-	print("Equip: selected indices =", selected)
-
 	if selected.is_empty():
 		print("Equip: nothing selected.")
 		return
 
 	var index := selected[0]
-	print("Equip: equipping index", index, "item=", _weapon_manager.inventory.get_item_name(index))
+	var inv := _weapon_manager.inventory
+	var t := inv.get_item_type(index)
 
-	_weapon_manager.equip_from_inventory(index)
+	print("Equip: index=", index, "type=", t, "name=", inv.get_item_name(index))
 
+	if t == "weapon":
+		_weapon_manager.equip_from_inventory(index)
+	else:
+		push_warning("Equip: Unsupported item type: %s" % t)
+		return
+
+	# Open equipment panel (optional)
 	if _equipment_ui != null and _equipment_ui.has_method("open"):
 		_equipment_ui.call("open")
 
+	# Refresh UI (note: inventory_changed will also trigger refresh via signal)
 	_refresh()
 
 func _on_close_pressed() -> void:

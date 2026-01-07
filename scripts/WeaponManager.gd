@@ -166,16 +166,21 @@ func _equip_scene(scene: PackedScene) -> void:
 	current_weapon = weapon_node as BaseWeapon
 	if current_weapon == null:
 		push_warning("WeaponManager: Equipped scene is not a BaseWeapon. Attach BaseWeapon.gd to the weapon root.")
-	else:
-		# Push ItemDefinition stats into the weapon (fire_rate/base_damage live on ItemDefinition now)
-		if inventory != null and inventory.has_equipped_weapon():
-			var def: ItemDefinition = inventory.equipped_weapon.get("def", null) as ItemDefinition
-			if def != null:
-				current_weapon.set_item_definition(def)
-			else:
-				push_warning("WeaponManager: Equipped entry 'def' is missing or not an ItemDefinition.")
+		emit_signal("weapon_equipped", weapon_node)
+		return
+
+	current_weapon.weapon_manager = self
+
+	# Push ItemDefinition stats into the weapon (fire_rate/base_damage live on ItemDefinition)
+	if inventory != null and inventory.has_equipped_weapon():
+		var def: ItemDefinition = inventory.equipped_weapon.get("def", null) as ItemDefinition
+		if def != null:
+			current_weapon.set_item_definition(def)
+		else:
+			push_warning("WeaponManager: Equipped entry 'def' is missing or not an ItemDefinition.")
 
 	emit_signal("weapon_equipped", weapon_node)
+
 
 
 func _find_first_weapon_index() -> int:

@@ -165,9 +165,9 @@ text = "(none)"
 [node name="ButtonsRow" type="HBoxContainer" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer"]
 layout_mode = 2
 
-[node name="UnequipButton" type="Button" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer/ButtonsRow"]
+[node name="UnequipWeaponButton" type="Button" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer/ButtonsRow"]
 layout_mode = 2
-text = "Unequip"
+text = "Unequip Weapon"
 
 [node name="CloseButton" type="Button" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer/ButtonsRow"]
 layout_mode = 2

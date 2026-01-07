@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cgr178osx736x"]
+[gd_scene load_steps=13 format=3 uid="uid://cgr178osx736x"]
 
 [ext_resource type="Texture2D" uid="uid://d1u5tbpyycv63" path="res://assets/environment/dirtandgrass.png" id="1_4wyf3"]
 [ext_resource type="Script" uid="uid://dw3tyspqf6d1k" path="res://scripts/PlayerUI.gd" id="1_71j4m"]
@@ -6,7 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://cq8lvqa2wju0w" path="res://scenes/enemy.tscn" id="2_4wyf3"]
 [ext_resource type="Script" uid="uid://dxk8c0lhw2hgk" path="res://scripts/enemy_spawner.gd" id="3_4wyf3"]
 [ext_resource type="Script" uid="uid://dkj8v2fhpdtl1" path="res://scripts/InventoryUI.gd" id="4_4mrxx"]
-[ext_resource type="PackedScene" path="res://scenes/WeaponPickup.tscn" id="7_7r4gi"]
+[ext_resource type="Script" uid="uid://bb6vgibhsdeev" path="res://scripts/EquipmentUI.gd" id="5_7r4gi"]
+[ext_resource type="PackedScene" uid="uid://bmiu262jolk0b" path="res://scenes/WeaponPickup.tscn" id="7_7r4gi"]
 [ext_resource type="PackedScene" uid="uid://dorne3gevs8gq" path="res://scenes/BasicBow.tscn" id="8_4mrxx"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o5qli"]
@@ -61,31 +62,86 @@ offset_right = 1151.0
 offset_bottom = 399.0
 
 [node name="InventoryPanel" type="Panel" parent="Player/Camera2D/UI/HUD"]
-layout_mode = 0
-offset_left = 7.0
-offset_top = 15.0
-offset_right = 418.0
-offset_bottom = 395.0
+layout_mode = 1
+offset_right = 310.0
+offset_bottom = 200.0
 script = ExtResource("4_4mrxx")
+equipment_panel_path = NodePath("../EquipmentPanel")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Player/Camera2D/UI/HUD/InventoryPanel"]
 layout_mode = 0
-offset_right = 375.0
-offset_bottom = 380.0
+offset_right = 217.0
+offset_bottom = 200.0
 
 [node name="Label" type="Label" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer"]
 layout_mode = 2
 text = "Inventory"
+
+[node name="WeaponList" type="ItemList" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+accessibility_name = "WeaponList"
+theme_override_colors/font_color = Color(0.9393102, 0.95344514, 1, 1)
+
+[node name="ButtonsRow" type="HBoxContainer" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="EquipButton" type="Button" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer/ButtonsRow"]
+layout_mode = 2
+text = "Equip"
+
+[node name="CloseButton" type="Button" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer/ButtonsRow"]
+layout_mode = 2
+text = "Close"
 
 [node name="HintLabel" type="Label" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer"]
 layout_mode = 2
 accessibility_name = "HintLabel"
 text = "Click to equip. Esc/I to close."
 
-[node name="WeaponList" type="ItemList" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer"]
+[node name="EquipmentPanel" type="Panel" parent="Player/Camera2D/UI/HUD"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.098
+anchor_top = 0.036
+anchor_right = 0.409
+anchor_bottom = 0.995
+offset_left = 305.202
+offset_top = 0.63600063
+offset_right = 263.202
+offset_bottom = -80.0
+script = ExtResource("5_7r4gi")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Player/Camera2D/UI/HUD/EquipmentPanel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TitleLabel" type="Label" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer"]
 layout_mode = 2
-accessibility_name = "WeaponList"
-theme_override_colors/font_color = Color(0.9393102, 0.95344514, 1, 1)
+text = "Equipment"
+
+[node name="WeaponRow" type="HBoxContainer" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="WeaponLabel" type="Label" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer/WeaponRow"]
+layout_mode = 2
+text = "Weapon"
+
+[node name="WeaponValue" type="Label" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer/WeaponRow"]
+layout_mode = 2
+text = "(none)"
+
+[node name="ButtonsRow" type="HBoxContainer" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="UnequipButton" type="Button" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer/ButtonsRow"]
+layout_mode = 2
+text = "Unequip"
+
+[node name="CloseButton" type="Button" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer/ButtonsRow"]
+layout_mode = 2
+text = "Close"
 
 [node name="Enemies" type="Node2D" parent="."]
 position = Vector2(990, 253)

@@ -107,3 +107,56 @@ func _equip_scene(scene: PackedScene) -> void:
 		push_warning("WeaponManager: Equipped scene is not a BaseWeapon. Attach BaseWeapon.gd to the weapon root.")
 
 	emit_signal("weapon_equipped", weapon_node)
+
+func unequip() -> void:
+	if inventory == null:
+		return
+	if not inventory.has_equipped_weapon():
+		return
+
+	_return_equipped_to_inventory()
+
+	# Remove current weapon instance
+	if _socket != null:
+		for child in _socket.get_children():
+			child.queue_free()
+
+	current_weapon = null
+	inventory.emit_signal("inventory_changed")
+
+func _return_equipped_to_inventory() -> void:
+	if not inventory.has_equipped_weapon():
+		return
+
+	var entry := inventory.equipped_weapon
+	inventory.equipped_weapon = {}
+	inventory.weapons.append(entry)
+
+
+func equip_from_inventory(index: int) -> void:
+	if inventory == null:
+		return
+	if index < 0 or index >= inventory.weapons.size():
+		return
+
+	# If something is already equipped, return it to inventory first
+	if inventory.has_equipped_weapon():
+		_return_equipped_to_inventory()
+
+	# Move selected entry into equipped slot
+	var entry: Dictionary = inventory.weapons[index]
+	inventory.weapons.remove_at(index)
+	inventory.equipped_weapon = entry
+
+	# Spawn the weapon scene on the socket
+	var scene := load(String(entry["path"])) as PackedScene
+	if scene == null:
+		push_warning("WeaponManager: Could not load equipped weapon scene: %s" % String(entry["path"]))
+		inventory.equipped_weapon = {}
+		inventory.emit_signal("inventory_changed")
+		return
+
+	_equip_scene(scene)
+
+	# Notify UI
+	inventory.emit_signal("inventory_changed")

@@ -90,7 +90,7 @@ func _try_drop_loot() -> void:
 	for entry in drops:
 		if entry == null:
 			continue
-		if entry.pickup_scene == null or entry.weapon_scene == null:
+		if entry.pickup_scene == null or entry.item_def == null:
 			continue
 
 		# Roll per entry (you can change to "one roll total" if you prefer)
@@ -100,14 +100,16 @@ func _try_drop_loot() -> void:
 			# break
 
 func _spawn_pickup(entry: DropEntry) -> void:
-	var pickup := entry.pickup_scene.instantiate() as WeaponPickup
+	var pickup := entry.pickup_scene.instantiate() as ItemPickup
 	if pickup == null:
-		push_warning("Enemy drop: pickup_scene is not a WeaponPickup.")
+		push_warning("Enemy drop: pickup_scene is not an ItemPickup.")
 		return
 
-	pickup.weapon_scene = entry.weapon_scene
-	pickup.display_name = entry.display_name
+	# Configure the pickup from the ItemDefinition resource
+	pickup.item_def = entry.item_def
+	pickup.quantity = max(entry.quantity, 1)
 
+	# Raycast down to place on ground
 	var ray_from := global_position + Vector2(0, -16)
 	var ray_to := ray_from + Vector2(0, 800)
 
@@ -123,10 +125,6 @@ func _spawn_pickup(entry: DropEntry) -> void:
 	if result.size() > 0:
 		var hit_pos: Vector2 = result["position"]
 		final_pos = hit_pos - Vector2(0, drop_clearance)
-		_debug_draw_ray(ray_from, hit_pos, true)
-	else:
-		_debug_draw_ray(ray_from, ray_to, false)
-		print("DROP RAY MISSED GROUND. from=", ray_from, " to=", ray_to, " mask=", GROUND_MASK)
 
 	get_parent().add_child(pickup)
 	pickup.global_position = final_pos

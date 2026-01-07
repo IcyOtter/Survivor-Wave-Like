@@ -15,13 +15,11 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_process(true)
 
-	# Wire buttons (do this once)
 	if not equip_button.pressed.is_connected(_on_equip_pressed):
 		equip_button.pressed.connect(_on_equip_pressed)
 	if not close_button.pressed.is_connected(_on_close_pressed):
 		close_button.pressed.connect(_on_close_pressed)
 
-	# Wire list selection to enable equip
 	if not weapon_list.item_selected.is_connected(_on_item_selected):
 		weapon_list.item_selected.connect(_on_item_selected)
 
@@ -67,23 +65,30 @@ func _refresh() -> void:
 
 	var inv := _weapon_manager.inventory
 
-	for i in range(inv.weapons.size()):
-		var display_name := inv.get_weapon_name(i)
-		weapon_list.add_item(display_name)
+	for i in range(inv.items.size()):
+		var item_name := inv.get_item_name(i)
+		var qty := inv.get_item_qty(i)
+		weapon_list.add_item("%s  x%d" % [item_name, qty])
 
-	# Enable equip only if something is selected
-	equip_button.disabled = weapon_list.get_selected_items().is_empty()
+	# Enable equip only if something is selected (and selection is a weapon)
+	var selected := weapon_list.get_selected_items()
+	if selected.is_empty():
+		equip_button.disabled = true
+	else:
+		equip_button.disabled = inv.get_item_type(selected[0]) != "weapon"
 
-	# Show equipped status in the hint (optional)
 	var equipped_text := "(none)"
 	if inv.has_equipped_weapon():
-		equipped_text = inv.get_equipped_name()
+		equipped_text = inv.get_equipped_weapon_name()
 
-	hint_label.text = "Weapons: %d | Equipped: %s" % [inv.weapons.size(), equipped_text]
+	hint_label.text = "Items: %d | Equipped: %s" % [inv.items.size(), equipped_text]
 
+func _on_item_selected(index: int) -> void:
+	if _weapon_manager == null or _weapon_manager.inventory == null:
+		equip_button.disabled = true
+		return
 
-func _on_item_selected(_index: int) -> void:
-	equip_button.disabled = false
+	equip_button.disabled = _weapon_manager.inventory.get_item_type(index) != "weapon"
 
 func _on_equip_pressed() -> void:
 	if _weapon_manager == null or _weapon_manager.inventory == null:
@@ -98,11 +103,10 @@ func _on_equip_pressed() -> void:
 		return
 
 	var index := selected[0]
-	print("Equip: equipping index", index, "name=", _weapon_manager.inventory.get_weapon_name(index))
+	print("Equip: equipping index", index, "item=", _weapon_manager.inventory.get_item_name(index))
 
 	_weapon_manager.equip_from_inventory(index)
 
-	# Open equipment panel if provided (optional)
 	if _equipment_ui != null and _equipment_ui.has_method("open"):
 		_equipment_ui.call("open")
 

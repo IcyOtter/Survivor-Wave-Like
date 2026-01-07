@@ -4,14 +4,13 @@
 [ext_resource type="Texture2D" uid="uid://bfnao0om1m8kk" path="res://assets/enemies/slime.png" id="2_4ra3w"]
 [ext_resource type="Script" uid="uid://c0xeprhbprjvv" path="res://scripts/EnemyHealthBar.gd" id="2_5uy6h"]
 [ext_resource type="Script" uid="uid://cstfxioi7pfmh" path="res://scripts/DropEntry.gd" id="2_xwavj"]
-[ext_resource type="PackedScene" uid="uid://bmiu262jolk0b" path="res://scenes/WeaponPickup.tscn" id="4_md484"]
-[ext_resource type="PackedScene" uid="uid://dorne3gevs8gq" path="res://scenes/BasicBow.tscn" id="4_xwavj"]
+[ext_resource type="PackedScene" uid="uid://4ewapt1weyo" path="res://scenes/ItemPickup.tscn" id="3_c4w8v"]
+[ext_resource type="Resource" uid="uid://bbyoc5thmj6ny" path="res://scenes/Bow_Normal.tres" id="3_xwavj"]
 
 [sub_resource type="Resource" id="Resource_ipns3"]
 script = ExtResource("2_xwavj")
-pickup_scene = ExtResource("4_md484")
-weapon_scene = ExtResource("4_xwavj")
-display_name = "Basic Bow"
+pickup_scene = ExtResource("3_c4w8v")
+item_def = ExtResource("3_xwavj")
 chance = 1.0
 metadata/_custom_type_script = "uid://cstfxioi7pfmh"
 

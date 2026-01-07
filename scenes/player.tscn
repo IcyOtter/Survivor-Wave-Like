@@ -1,8 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://blxypbuxj31em"]
+[gd_scene load_steps=8 format=3 uid="uid://blxypbuxj31em"]
 
 [ext_resource type="Script" uid="uid://b0dlwj14qvmlx" path="res://scripts/player.gd" id="1_g2els"]
 [ext_resource type="Script" uid="uid://bricsnrakdnth" path="res://scripts/WeaponManager.gd" id="2_dqkch"]
 [ext_resource type="Texture2D" uid="uid://d18a35ch3wai7" path="res://assets/player/pixelplayer.png" id="2_g2els"]
+[ext_resource type="Script" uid="uid://bdfvny2l3xmqp" path="res://scripts/ItemDefinition.gd" id="4_qlg0r"]
+[ext_resource type="Resource" uid="uid://bbyoc5thmj6ny" path="res://scenes/Bow_Normal.tres" id="5_tuyoq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tuyoq"]
 size = Vector2(23, 46)
@@ -29,6 +31,7 @@ shape = SubResource("CircleShape2D_qhqgy")
 
 [node name="WeaponManager" type="Node2D" parent="."]
 script = ExtResource("2_dqkch")
+starting_items = Array[ExtResource("4_qlg0r")]([ExtResource("5_tuyoq")])
 
 [node name="WeaponSocket" type="Node2D" parent="."]
 position = Vector2(19, 12)

@@ -8,7 +8,8 @@ extends CharacterBody2D
 @export var gravity: float = 1200.0
 
 var _auto_fire_enabled: bool = false
-var _nearby_pickups: Array[WeaponPickup] = []
+var _nearby_pickups: Array[ItemPickup] = []
+
 
 signal health_changed(current: int, max: int)
 @export var max_health: int = 100
@@ -59,25 +60,24 @@ func _physics_process(delta: float) -> void:
 	# Pickup (E)
 	# -----------------
 	if Input.is_action_just_pressed("interact"):
-		_try_pickup_weapon()
+		_try_pickup_item()
 
 func _on_pickup_area_entered(area: Area2D) -> void:
-	if area is WeaponPickup:
+	if area is ItemPickup:
 		_nearby_pickups.append(area)
 
 func _on_pickup_area_exited(area: Area2D) -> void:
-	if area is WeaponPickup:
+	if area is ItemPickup:
 		_nearby_pickups.erase(area)
 
-func _try_pickup_weapon() -> void:
-	# Remove invalid references
+
+func _try_pickup_item() -> void:
 	_nearby_pickups = _nearby_pickups.filter(func(p): return p != null and is_instance_valid(p))
 
 	if _nearby_pickups.is_empty():
 		return
 
-	# Pick nearest pickup
-	var nearest: WeaponPickup = null
+	var nearest: ItemPickup = null
 	var best_dist := INF
 
 	for p in _nearby_pickups:
@@ -89,11 +89,11 @@ func _try_pickup_weapon() -> void:
 	if nearest == null:
 		return
 
-	# Add to inventory (does NOT auto-equip)
-	var added := weapon_manager.add_weapon_from_pickup(nearest)
+	var added := weapon_manager.add_item_from_pickup(nearest)
 	if added:
-		print("Picked up:", nearest.get_display_name())
+		print("Picked up:", nearest.get_display_name(), "x", nearest.quantity)
 		nearest.queue_free()
+
 
 # Player takes damage
 func take_damage(amount: int) -> void:

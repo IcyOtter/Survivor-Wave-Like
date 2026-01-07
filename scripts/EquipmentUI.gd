@@ -52,11 +52,13 @@ func _refresh() -> void:
 		return
 
 	var inv := _weapon_manager.inventory
+
 	if inv.has_equipped_weapon():
-		weapon_value.text = inv.get_equipped_name()
+		weapon_value.text = inv.get_equipped_weapon_name()
+		unequip_button.disabled = false
 	else:
 		weapon_value.text = "(none)"
-
+		unequip_button.disabled = true
 
 func _on_unequip_pressed() -> void:
 	if _weapon_manager != null:

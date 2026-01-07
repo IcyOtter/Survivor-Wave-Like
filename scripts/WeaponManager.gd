@@ -30,10 +30,12 @@ func _ready() -> void:
 	# Add starting weapons into inventory
 	for w in starting_weapons:
 		if w != null and w.resource_path != "":
-			inventory.add_weapon(w.resource_path)
+			var path := w.resource_path
+			var display_name := path.get_file().get_basename()
+			inventory.add_weapon(path, display_name)
 
-	# Auto-equip first weapon if any
-	if inventory.weapon_paths.size() > 0 and inventory.equipped_index == -1:
+	# Optional: auto-equip first weapon if any
+	if inventory.weapons.size() > 0 and inventory.equipped_index == -1:
 		equip_index(0)
 
 func _on_inventory_changed() -> void:
@@ -43,38 +45,43 @@ func try_fire() -> void:
 	if current_weapon != null:
 		current_weapon.fire()
 
-func add_weapon_scene(scene: PackedScene, auto_equip: bool = false) -> bool:
+func add_weapon_scene(scene: PackedScene, display_name: String = "", auto_equip: bool = false) -> bool:
 	if scene == null:
 		return false
 	if scene.resource_path == "":
 		push_warning("WeaponManager: Weapon scene has no resource_path. Save the .tscn to disk.")
 		return false
 
-	var added := inventory.add_weapon(scene.resource_path)
+	var path := scene.resource_path
+	if display_name.strip_edges() == "":
+		display_name = path.get_file().get_basename()
+
+	var added := inventory.add_weapon(path, display_name)
 
 	# Only equip if explicitly requested
 	if added and auto_equip:
-		equip_index(inventory.weapon_paths.size() - 1)
+		equip_index(inventory.weapons.size() - 1)
 
 	return added
 
-func add_weapon_path(path: String, auto_equip: bool = false) -> bool:
-	var added := inventory.add_weapon(path)
+func add_weapon_from_pickup(pickup: WeaponPickup) -> bool:
+	if pickup == null:
+		return false
 
-	# Only equip if explicitly requested
-	if added and auto_equip:
-		equip_index(inventory.weapon_paths.size() - 1)
+	var path := pickup.get_weapon_path()
+	var display_name := pickup.get_display_name()
 
+	var added := inventory.add_weapon(path, display_name)
+	# inventory.add_weapon emits inventory_changed which triggers inventory_updated already
 	return added
-
 
 func equip_index(index: int) -> void:
 	if inventory == null:
 		return
-	if index < 0 or index >= inventory.weapon_paths.size():
+	if index < 0 or index >= inventory.weapons.size():
 		return
 
-	var path := inventory.weapon_paths[index]
+	var path := inventory.get_weapon_path(index)
 	var scene := load(path) as PackedScene
 	if scene == null:
 		push_warning("WeaponManager: Could not load weapon scene at path: %s" % path)
@@ -100,4 +107,3 @@ func _equip_scene(scene: PackedScene) -> void:
 		push_warning("WeaponManager: Equipped scene is not a BaseWeapon. Attach BaseWeapon.gd to the weapon root.")
 
 	emit_signal("weapon_equipped", weapon_node)
-

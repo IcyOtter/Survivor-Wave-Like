@@ -17,8 +17,6 @@ func _ready() -> void:
 	_bind_weapon_manager()
 	_refresh()
 
-	
-
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("toggle_inventory"):
 		visible = not visible
@@ -52,7 +50,6 @@ func _bind_weapon_manager() -> void:
 func _on_inventory_updated() -> void:
 	_refresh()
 
-
 func _refresh() -> void:
 	weapon_list.clear()
 
@@ -61,20 +58,20 @@ func _refresh() -> void:
 		return
 
 	var inv := _weapon_manager.inventory
-	for i in range(inv.weapon_paths.size()):
-		var path := inv.weapon_paths[i]
-		var display_name := path.get_file().get_basename()
+
+	for i in range(inv.weapons.size()):
+		var display_name := inv.get_weapon_name(i)
 
 		if i == inv.equipped_index:
 			display_name += "  (EQUIPPED)"
 
 		weapon_list.add_item(display_name)
 
-	hint_label.text = "Weapons: %d | Enter/Double-click to equip | I to toggle" % inv.weapon_paths.size()
-	print("Inventory paths:", _weapon_manager.inventory.weapon_paths)
+	hint_label.text = "Weapons: %d | Enter/Double-click to equip | I to toggle" % inv.weapons.size()
+
+	# Debug (remove later)
+	print("Inventory entries:", inv.weapons)
 	print("WeaponList item_count=", weapon_list.item_count, " rect_size=", weapon_list.size)
-
-
 
 func _on_item_activated(index: int) -> void:
 	if _weapon_manager != null:

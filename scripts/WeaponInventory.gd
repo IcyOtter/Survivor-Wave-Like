@@ -3,32 +3,32 @@ class_name WeaponInventory
 
 signal inventory_changed()
 
-# Store weapon scene paths for easy saving/loading later
-@export var weapon_paths: Array[String] = []
+# Each entry = { path: String, name: String }
+@export var weapons: Array[Dictionary] = []
 @export var equipped_index: int = -1
 
-func add_weapon(path: String) -> bool:
+func add_weapon(path: String, display_name: String) -> bool:
 	if path == "":
 		return false
-	if weapon_paths.has(path):
-		return false # prevent duplicates (remove this if you want duplicates)
-	weapon_paths.append(path)
+
+	for w in weapons:
+		if w.path == path:
+			return false # prevent duplicates
+
+	weapons.append({
+		"path": path,
+		"name": display_name
+	})
+
 	emit_signal("inventory_changed")
 	return true
 
-func remove_weapon_at(index: int) -> void:
-	if index < 0 or index >= weapon_paths.size():
-		return
-	weapon_paths.remove_at(index)
-
-	if equipped_index == index:
-		equipped_index = -1
-	elif equipped_index > index:
-		equipped_index -= 1
-
-	emit_signal("inventory_changed")
-
 func get_weapon_path(index: int) -> String:
-	if index < 0 or index >= weapon_paths.size():
+	if index < 0 or index >= weapons.size():
 		return ""
-	return weapon_paths[index]
+	return weapons[index]["path"]
+
+func get_weapon_name(index: int) -> String:
+	if index < 0 or index >= weapons.size():
+		return ""
+	return weapons[index]["name"]

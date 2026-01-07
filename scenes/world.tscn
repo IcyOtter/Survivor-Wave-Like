@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cgr178osx736x"]
+[gd_scene load_steps=14 format=3 uid="uid://cgr178osx736x"]
 
 [ext_resource type="Texture2D" uid="uid://d1u5tbpyycv63" path="res://assets/environment/dirtandgrass.png" id="1_4wyf3"]
 [ext_resource type="Script" uid="uid://dw3tyspqf6d1k" path="res://scripts/PlayerUI.gd" id="1_71j4m"]
@@ -10,8 +10,11 @@
 [ext_resource type="PackedScene" uid="uid://bmiu262jolk0b" path="res://scenes/WeaponPickup.tscn" id="7_7r4gi"]
 [ext_resource type="PackedScene" uid="uid://dorne3gevs8gq" path="res://scenes/BasicBow.tscn" id="8_4mrxx"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7r4gi"]
+size = Vector2(0.21163082, 20)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o5qli"]
-size = Vector2(2364, 81)
+size = Vector2(2351, 10.5)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_71j4m"]
 bg_color = Color(1, 0, 0, 0)
@@ -25,19 +28,44 @@ corner_radius_bottom_left = 20
 
 [node name="World" type="Node2D"]
 
-[node name="Floor" type="StaticBody2D" parent="."]
-position = Vector2(292, 440)
+[node name="LeftWall" type="StaticBody2D" parent="."]
+position = Vector2(-208, 754)
+collision_layer = 29
+collision_mask = 21
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall"]
+position = Vector2(3.5, 0)
+rotation = 3.1415925
+scale = Vector2(14.175628, -33.168156)
+shape = SubResource("RectangleShape2D_7r4gi")
+
+[node name="RightWall" type="StaticBody2D" parent="."]
+position = Vector2(2152, 754)
+collision_layer = 29
+collision_mask = 21
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall"]
+position = Vector2(3.5, 0)
+rotation = 3.1415925
+scale = Vector2(14.175628, -33.168156)
+shape = SubResource("RectangleShape2D_7r4gi")
+
+[node name="Floor" type="StaticBody2D" parent="." groups=["floor_debug"]]
+position = Vector2(1221, 842)
 collision_layer = 5
+collision_mask = 5
 
 [node name="Sprite2D" type="Sprite2D" parent="Floor"]
-scale = Vector2(27.640623, 1.296875)
+position = Vector2(-248.99988, 103.75)
+scale = Vector2(36.875, 4.5390625)
 texture = ExtResource("1_4wyf3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+position = Vector2(-253, 84)
 shape = SubResource("RectangleShape2D_o5qli")
 
 [node name="Player" parent="." instance=ExtResource("1_rwgxs")]
-position = Vector2(334, 159)
+position = Vector2(334, 858)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 visible = false
@@ -151,7 +179,6 @@ position = Vector2(890, 290)
 script = ExtResource("3_4wyf3")
 enemy_scenes = Array[PackedScene]([ExtResource("2_4wyf3")])
 spawn_interval = 5.0
-spawn_enabled = false
 
 [node name="SpawnPoints" type="Node2D" parent="EnemySpawner"]
 position = Vector2(-1, 42)
@@ -166,6 +193,6 @@ position = Vector2(140, 2)
 position = Vector2(90, 5)
 
 [node name="WeaponPickup" parent="." instance=ExtResource("7_7r4gi")]
-position = Vector2(512, 373)
+position = Vector2(512, 890)
 weapon_scene = ExtResource("8_4mrxx")
 display_name = "Basic Bow"

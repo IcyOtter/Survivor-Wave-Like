@@ -10,7 +10,6 @@ radius = 1.0
 collision_layer = 2
 collision_mask = 12
 script = ExtResource("1_23jat")
-flat_damage_bonus = 5
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(1, 0.858)

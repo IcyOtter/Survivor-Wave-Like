@@ -88,7 +88,9 @@ func _make_entry(def: ItemDefinition, amount: int) -> Dictionary:
 	if def.weapon_scene != null and def.weapon_scene.resource_path != "":
 		weapon_path = def.weapon_scene.resource_path
 
+
 	return {
+		"def": def,
 		"id": def.id,
 		"name": def.display_name,
 		"type": def.item_type,
@@ -97,3 +99,4 @@ func _make_entry(def: ItemDefinition, amount: int) -> Dictionary:
 		"stackable": def.stackable,
 		"max_stack": def.max_stack
 	}
+

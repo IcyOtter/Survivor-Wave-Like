@@ -35,11 +35,15 @@ func _do_fire() -> void:
 
 	proj.global_position = spawn_pos
 	proj.direction = dir
+	var range_bonus: int = Progression.get_skill_level("range") - 1
+	var final_damage: int = base_damage + range_bonus
+
 	proj.configure(
 		item_def.projectile_speed,
 		item_def.projectile_lifetime,
 		item_def.projectile_rotate_to_direction,
-		base_damage
+		final_damage
 	)
+
 
 	get_tree().current_scene.add_child(proj)

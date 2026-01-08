@@ -18,6 +18,7 @@ script = ExtResource("2_03gb4")
 id = "Green_Slime"
 display_name = "Green Slime"
 max_health = 5
+xp_reward = 25
 sprite_texture = ExtResource("3_03gb4")
 drops = Array[ExtResource("1_d7psj")]([SubResource("Resource_n1tap")])
 metadata/_custom_type_script = "uid://gptryxxcepb0"

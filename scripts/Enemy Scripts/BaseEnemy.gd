@@ -106,6 +106,11 @@ func take_damage(amount: int) -> void:
 
 func die() -> void:
 	_try_drop_loot()
+
+		# Award XP (total + range skill for now)
+	if npc_def != null and npc_def.xp_reward > 0:
+		Progression.gain_xp(npc_def.xp_reward, "range")
+
 	queue_free()
 
 func _try_drop_loot() -> void:

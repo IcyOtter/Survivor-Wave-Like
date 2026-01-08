@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://dye5pg2ke0g2b"]
+
+[ext_resource type="Script" uid="uid://dgj0iklwujynx" path="res://scripts/BaseProjectile.gd" id="1_23jat"]
+[ext_resource type="Texture2D" uid="uid://lk11nwoppvei" path="res://assets/projectiles/stone arrow/stonearrow.png" id="2_q8ifc"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7ckq1"]
+radius = 1.0
+
+[node name="Arrow" type="Area2D"]
+collision_layer = 2
+collision_mask = 12
+script = ExtResource("1_23jat")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(1, 0.858)
+texture = ExtResource("2_q8ifc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-3, 0)
+shape = SubResource("CircleShape2D_7ckq1")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

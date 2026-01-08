@@ -25,6 +25,3 @@ layout_mode = 2
 
 [node name="RangeLabel" type="Label" parent="Panel/VBox"]
 layout_mode = 2
-
-[node name="PointsLabel" type="Label" parent="Panel/VBox"]
-layout_mode = 2

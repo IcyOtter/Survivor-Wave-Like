@@ -1,12 +1,11 @@
 extends CanvasLayer
 
+# Player Health Bar UI
 @onready var health_bar: ProgressBar = $PlayerHealthBar
-
 
 func _ready() -> void:
 	health_bar.visible = true
 	health_bar.min_value = 0
-
 	call_deferred("_bind_player")
 
 

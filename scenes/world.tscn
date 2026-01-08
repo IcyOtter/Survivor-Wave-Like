@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cgr178osx736x"]
+[gd_scene load_steps=14 format=3 uid="uid://cgr178osx736x"]
 
 [ext_resource type="Texture2D" uid="uid://d1u5tbpyycv63" path="res://assets/environment/dirtandgrass.png" id="1_4wyf3"]
 [ext_resource type="PackedScene" uid="uid://blxypbuxj31em" path="res://scenes/player.tscn" id="1_rwgxs"]
@@ -19,11 +19,14 @@ size = Vector2(2351, 10.5)
 bg_color = Color(1, 0, 0, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qfnet"]
-bg_color = Color(0.8745098, 0, 0.023529412, 1)
+bg_color = Color(0.9411765, 0.11764706, 0, 1)
 corner_radius_top_left = 20
 corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4mrxx"]
+bg_color = Color(0.39215687, 0.8862745, 0.1254902, 1)
 
 [node name="World" type="Node2D"]
 
@@ -82,13 +85,25 @@ theme_override_styles/background = SubResource("StyleBoxFlat_71j4m")
 theme_override_styles/fill = SubResource("StyleBoxFlat_qfnet")
 show_percentage = false
 
+[node name="PlayerXPBar" type="ProgressBar" parent="Player/Camera2D/UI"]
+offset_left = 3.0
+offset_top = 20.0
+offset_right = 92.0
+offset_bottom = 28.0
+theme_override_styles/background = SubResource("StyleBoxFlat_71j4m")
+theme_override_styles/fill = SubResource("StyleBoxFlat_4mrxx")
+show_percentage = false
+
 [node name="HUD" type="Control" parent="Player/Camera2D/UI"]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 1151.0
-offset_bottom = 399.0
+offset_left = -1.0
+offset_top = 2.0
+offset_right = 1150.0
+offset_bottom = 401.0
 
 [node name="InventoryPanel" type="Panel" parent="Player/Camera2D/UI/HUD"]
+visible = false
 layout_mode = 1
 offset_right = 310.0
 offset_bottom = 200.0

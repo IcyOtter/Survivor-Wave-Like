@@ -1,5 +1,6 @@
 extends CanvasLayer
 
+@onready var panel: Control = $Panel
 @onready var total_label: Label = $Panel/VBox/TotalLabel
 @onready var total_xp_bar: ProgressBar = $Panel/VBox/TotalXPBar
 @onready var range_label: Label = $Panel/VBox/RangeLabel
@@ -10,6 +11,13 @@ var _range_level: int = 1
 var _range_xp: int = 0
 
 func _ready() -> void:
+	# Start hidden so it behaves like the inventory (optional)
+	panel.visible = false
+
+	# Make sure input still works when paused/menus are open if you use pause later
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_process(true)
+
 	if not Progression.total_changed.is_connected(_on_total_changed):
 		Progression.total_changed.connect(_on_total_changed)
 
@@ -23,16 +31,29 @@ func _ready() -> void:
 
 	_refresh()
 
+func _process(_delta: float) -> void:
+	# Toggle with the same action as inventory (Tab)
+	if Input.is_action_just_pressed("toggle_inventory"):
+		panel.visible = not panel.visible
+		if panel.visible:
+			_refresh()
+
+	# Optional: allow Esc to close if open
+	if panel.visible and Input.is_action_just_pressed("ui_cancel"):
+		panel.visible = false
+
 func _on_total_changed(total_level: int, total_xp: int) -> void:
 	_total_level = total_level
 	_total_xp = total_xp
-	_refresh()
+	if panel.visible:
+		_refresh()
 
 func _on_skill_changed(skill_id: String, level: int, xp: int) -> void:
 	if skill_id == "range":
 		_range_level = level
 		_range_xp = xp
-		_refresh()
+		if panel.visible:
+			_refresh()
 
 func _refresh() -> void:
 	var req: int = Progression.xp_to_next_total(_total_level)

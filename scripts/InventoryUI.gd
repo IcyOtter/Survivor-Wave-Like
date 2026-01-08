@@ -23,6 +23,9 @@ func _ready() -> void:
 	if not weapon_list.item_selected.is_connected(_on_item_selected):
 		weapon_list.item_selected.connect(_on_item_selected)
 
+	if not weapon_list.item_activated.is_connected(_on_item_activated):
+		weapon_list.item_activated.connect(_on_item_activated)
+
 	_equipment_ui = get_node_or_null(equipment_panel_path)
 	_bind_weapon_manager()
 	_refresh()
@@ -138,6 +141,26 @@ func _on_equip_pressed() -> void:
 
 	# Refresh UI (note: inventory_changed will also trigger refresh via signal)
 	_refresh()
+
+func _on_item_activated(index: int) -> void:
+	if _weapon_manager == null or _weapon_manager.inventory == null:
+		return
+
+	var inv := _weapon_manager.inventory
+	var t := inv.get_item_type(index)
+
+	# Only equip weapons (per your current simplified system)
+	if t != "weapon":
+		return
+
+	_weapon_manager.equip_from_inventory(index)
+
+	# Optional: open equipment panel
+	if _equipment_ui != null and _equipment_ui.has_method("open"):
+		_equipment_ui.call("open")
+
+	_refresh()
+
 
 func _on_close_pressed() -> void:
 	visible = false

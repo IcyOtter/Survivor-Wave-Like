@@ -134,3 +134,7 @@ func consume_by_id(item_id: String, amount: int = 1) -> bool:
 
 	emit_signal("inventory_changed")
 	return true
+
+func get_equipped_weapon_def() -> ItemDefinition:
+	return equipped_weapon.get("def", null) as ItemDefinition
+

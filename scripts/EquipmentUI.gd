@@ -1,6 +1,7 @@
 extends Panel
 class_name EquipmentUI
 
+@onready var weapon_icon: TextureRect = $VBoxContainer/WeaponRow/WeaponIcon
 @onready var weapon_value: Label = $VBoxContainer/WeaponRow/WeaponValue
 @onready var unequip_weapon_button: Button = $VBoxContainer/ButtonsRow/UnequipWeaponButton
 @onready var close_button: Button = $VBoxContainer/ButtonsRow/CloseButton
@@ -19,6 +20,11 @@ func _ready() -> void:
 
 	if not close_button.pressed.is_connected(_on_close_pressed):
 		close_button.pressed.connect(_on_close_pressed)
+
+	# Optional: keep your double-click unequip on the label
+	weapon_value.mouse_filter = Control.MOUSE_FILTER_STOP
+	if not weapon_value.gui_input.is_connected(_on_weapon_value_gui_input):
+		weapon_value.gui_input.connect(_on_weapon_value_gui_input)
 
 	_refresh()
 
@@ -51,17 +57,24 @@ func _on_inventory_updated() -> void:
 func _refresh() -> void:
 	if _weapon_manager == null or _weapon_manager.inventory == null:
 		weapon_value.text = "(none)"
+		weapon_icon.texture = null
 		unequip_weapon_button.disabled = true
 		return
 
 	var inv := _weapon_manager.inventory
 
-	# Weapon slot
 	if inv.has_equipped_weapon():
 		weapon_value.text = inv.get_equipped_weapon_name()
 		unequip_weapon_button.disabled = false
+
+		var def: ItemDefinition = inv.get_equipped_weapon_def()
+		if def != null and def.icon != null:
+			weapon_icon.texture = def.icon
+		else:
+			weapon_icon.texture = null
 	else:
 		weapon_value.text = "(none)"
+		weapon_icon.texture = null
 		unequip_weapon_button.disabled = true
 
 func _on_unequip_weapon_pressed() -> void:
@@ -70,6 +83,15 @@ func _on_unequip_weapon_pressed() -> void:
 
 func _on_close_pressed() -> void:
 	visible = false
+
+func _on_weapon_value_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		var mb: InputEventMouseButton = event as InputEventMouseButton
+		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed and mb.double_click:
+			if _weapon_manager != null and _weapon_manager.inventory != null:
+				if _weapon_manager.inventory.has_equipped_weapon():
+					_weapon_manager.unequip()
+					_refresh()
 
 func open() -> void:
 	visible = true

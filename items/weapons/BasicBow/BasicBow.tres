@@ -12,6 +12,5 @@ display_name = "Basic Bow"
 icon = ExtResource("1_myamn")
 weapon_scene = ExtResource("4_g82io")
 fire_rate = 5.0
-base_damage = 1
 projectile_scene = ExtResource("2_7bjpb")
 metadata/_custom_type_script = "uid://bdfvny2l3xmqp"

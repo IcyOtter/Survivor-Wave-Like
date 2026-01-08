@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://d1u5tbpyycv63" path="res://assets/environment/dirtandgrass.png" id="1_4wyf3"]
 [ext_resource type="Script" uid="uid://dw3tyspqf6d1k" path="res://scripts/PlayerUI.gd" id="1_71j4m"]
 [ext_resource type="PackedScene" uid="uid://blxypbuxj31em" path="res://scenes/player.tscn" id="1_rwgxs"]
-[ext_resource type="PackedScene" uid="uid://cq8lvqa2wju0w" path="res://scenes/enemy.tscn" id="2_4wyf3"]
+[ext_resource type="PackedScene" uid="uid://cq8lvqa2wju0w" path="res://mobs/enemies/Green Slime/GreenSlime.tscn" id="2_4wyf3"]
 [ext_resource type="Script" uid="uid://dxk8c0lhw2hgk" path="res://scripts/Enemy Scripts/enemy_spawner.gd" id="3_4wyf3"]
 [ext_resource type="Script" uid="uid://dkj8v2fhpdtl1" path="res://scripts/InventoryUI.gd" id="4_4mrxx"]
 [ext_resource type="Script" uid="uid://bb6vgibhsdeev" path="res://scripts/EquipmentUI.gd" id="5_7r4gi"]
@@ -161,6 +161,11 @@ text = "Weapon"
 [node name="WeaponValue" type="Label" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer/WeaponRow"]
 layout_mode = 2
 text = "(none)"
+
+[node name="WeaponIcon" type="TextureRect" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer/WeaponRow"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+stretch_mode = 5
 
 [node name="ButtonsRow" type="HBoxContainer" parent="Player/Camera2D/UI/HUD/EquipmentPanel/VBoxContainer"]
 layout_mode = 2

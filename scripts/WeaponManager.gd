@@ -15,6 +15,14 @@ signal inventory_updated()
 var _socket: Node2D
 var current_weapon: BaseWeapon = null
 
+@export var item_pickup_scene: PackedScene  # set to your ItemPickup.tscn in Inspector
+
+@export var drop_offset: Vector2 = Vector2(16, -8)
+@export var drop_raycast_distance: float = 800.0
+@export var drop_clearance: float = 6.0
+@export var ground_mask: int = 1 << 2  # Layer 3 (match what you use for ground)
+
+
 
 func _ready() -> void:
 	_socket = get_node_or_null(weapon_socket_path) as Node2D
@@ -190,3 +198,77 @@ func _find_first_weapon_index() -> int:
 		if inventory.get_item_type(i) == "weapon" and inventory.get_weapon_path(i) != "":
 			return i
 	return -1
+
+func drop_item_from_inventory(index: int, amount: int = 1) -> void:
+	if inventory == null:
+		return
+	if item_pickup_scene == null:
+		push_warning("WeaponManager: item_pickup_scene is not set.")
+		return
+	if index < 0 or index >= inventory.items.size():
+		return
+	if amount <= 0:
+		return
+
+	var def: ItemDefinition = inventory.get_item_def(index)
+	if def == null:
+		push_warning("WeaponManager: Inventory item has no ItemDefinition.")
+		return
+
+	# Determine how many we can drop from this stack
+	var current_qty: int = inventory.get_item_qty(index)
+	var drop_qty: int = mini(amount, current_qty)
+	if drop_qty <= 0:
+		return
+
+	# Remove from inventory first
+	inventory.remove_item_by_index(index, drop_qty)
+
+	# Spawn pickup deferred (safe around physics)
+	call_deferred("_spawn_item_pickup_deferred", def, drop_qty)
+
+func _spawn_item_pickup_deferred(def: ItemDefinition, qty: int) -> void:
+	if def == null or qty <= 0:
+		return
+	if item_pickup_scene == null:
+		return
+
+	var pickup := item_pickup_scene.instantiate() as ItemPickup
+	if pickup == null:
+		push_warning("WeaponManager: item_pickup_scene is not an ItemPickup.")
+		return
+
+	pickup.item_def = def
+	pickup.quantity = qty
+
+	# Player position
+	var owner_node := get_parent() as Node2D
+	if owner_node == null:
+		owner_node = get_tree().get_first_node_in_group("player") as Node2D
+	if owner_node == null:
+		push_warning("WeaponManager: Could not find player to drop near.")
+		return
+
+	var start_pos: Vector2 = owner_node.global_position + drop_offset
+
+	# Raycast down to ground so the pickup doesn't spawn inside/under floor
+	var space := owner_node.get_world_2d().direct_space_state
+	var query := PhysicsRayQueryParameters2D.create(
+		start_pos,
+		start_pos + Vector2(0, drop_raycast_distance)
+	)
+	query.collision_mask = ground_mask
+	query.exclude = [owner_node]
+
+	var result := space.intersect_ray(query)
+
+	var final_pos := start_pos
+	if result.size() > 0:
+		final_pos = result["position"] - Vector2(0, drop_clearance)
+
+	var parent := owner_node.get_parent()
+	if parent == null:
+		parent = get_tree().current_scene
+
+	parent.add_child(pickup)
+	pickup.global_position = final_pos

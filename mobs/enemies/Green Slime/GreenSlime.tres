@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="NPCDefinition" load_steps=10 format=3 uid="uid://bwmorvryn6x3c"]
 
 [ext_resource type="Script" uid="uid://cstfxioi7pfmh" path="res://scripts/DropEntry.gd" id="1_d7psj"]
-[ext_resource type="Script" uid="uid://br0lv7qvslqdf" path="res://scripts/CoinDropEntry.gd" id="1_y40q7"]
+[ext_resource type="Script" path="res://scripts/CoinDropEntry.gd" id="1_y40q7"]
 [ext_resource type="Script" uid="uid://gptryxxcepb0" path="res://scripts/Enemy Scripts/NPCDefinition.gd" id="2_03gb4"]
 [ext_resource type="Resource" uid="uid://bbyoc5thmj6ny" path="res://items/weapons/BasicBow/BasicBow.tres" id="2_pp7x2"]
 [ext_resource type="PackedScene" uid="uid://dy3jk71n1bylw" path="res://scenes/CoinPickup.tscn" id="2_tfet5"]
@@ -23,7 +23,7 @@ metadata/_custom_type_script = "uid://cstfxioi7pfmh"
 
 [resource]
 script = ExtResource("2_03gb4")
-id = "Green_Slime"
+id = "Green Slime"
 max_health = 5
 xp_reward = 25
 sprite_texture = ExtResource("3_03gb4")

@@ -25,6 +25,10 @@ func _ready() -> void:
 	if not weapon_list.item_selected.is_connected(_on_item_selected):
 		weapon_list.item_selected.connect(_on_item_selected)
 
+	if not weapon_list.gui_input.is_connected(_on_weapon_list_gui_input):
+		weapon_list.gui_input.connect(_on_weapon_list_gui_input)
+
+
 	_equipment_ui = get_node_or_null(equipment_panel_path)
 
 	_bind_player_and_weapon_manager()
@@ -152,3 +156,27 @@ func _on_equip_pressed() -> void:
 
 func _on_close_pressed() -> void:
 	visible = false
+
+func _on_weapon_list_gui_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if _weapon_manager == null or _weapon_manager.inventory == null:
+		return
+
+	if event is InputEventMouseButton:
+		var mb := event as InputEventMouseButton
+
+		# Right click to drop
+		if mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed:
+			var local_pos: Vector2 = weapon_list.get_local_mouse_position()
+			var index: int = weapon_list.get_item_at_position(local_pos, true)
+			if index == -1:
+				return
+
+			# Optional: select the item you clicked
+			weapon_list.select(index)
+
+			# Drop 1 from that stack
+			_weapon_manager.drop_item_from_inventory(index, 1)
+
+			_refresh()

@@ -1,7 +1,7 @@
 extends Panel
 
 @onready var coins_label: Label = $VBoxContainer/CoinsLabel
-@onready var weapon_list: ItemList = $VBoxContainer/WeaponList
+@onready var weapon_list: ItemList = $VBoxContainer/ItemList
 @onready var hint_label: Label = $VBoxContainer/HintLabel
 @onready var equip_button: Button = $VBoxContainer/ButtonsRow/EquipButton
 @onready var close_button: Button = $VBoxContainer/ButtonsRow/CloseButton

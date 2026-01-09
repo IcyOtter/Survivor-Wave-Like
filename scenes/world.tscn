@@ -170,7 +170,7 @@ equipment_panel_path = NodePath("../EquipmentPanel")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Player/Camera2D/UI/HUD/InventoryPanel"]
 layout_mode = 0
-offset_right = 217.0
+offset_right = 310.0
 offset_bottom = 200.0
 
 [node name="Label" type="Label" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer"]
@@ -181,7 +181,7 @@ text = "Inventory"
 layout_mode = 2
 text = "Coins: 0"
 
-[node name="WeaponList" type="ItemList" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer"]
+[node name="ItemList" type="ItemList" parent="Player/Camera2D/UI/HUD/InventoryPanel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 accessibility_name = "WeaponList"

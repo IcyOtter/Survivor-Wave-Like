@@ -6,11 +6,13 @@
 script = ExtResource("1_0ycnv")
 
 [node name="Panel" type="PanelContainer" parent="."]
-anchors_preset = 2
+anchors_preset = -1
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -108.0
-offset_right = 424.0
+offset_left = 734.0
+offset_top = -629.0
+offset_right = 934.0
+offset_bottom = -544.0
 grow_vertical = 0
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
@@ -20,7 +22,6 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="TotalXPBar" type="ProgressBar" parent="Panel/VBox"]
-custom_minimum_size = Vector2(100, -200)
 layout_mode = 2
 
 [node name="RangeLabel" type="Label" parent="Panel/VBox"]

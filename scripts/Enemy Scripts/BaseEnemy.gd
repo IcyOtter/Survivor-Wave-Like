@@ -13,13 +13,15 @@ signal health_changed(current: int, max: int)
 
 var health: int = 1
 var player: Node2D = null
-var _damage_accumulator: float = 0.0
 
 # Runtime-applied stats (from npc_def)
 var max_health: int = 20
 var move_speed: float = 140.0
 var stop_distance: float = 18.0
-var contact_damage_per_second: float = 20.0
+@export var contact_damage: int = 10
+@export var contact_damage_interval: float = 1.0
+var _touching_target: Node = null
+var _contact_timer: float = 0.0
 var drops: Array[DropEntry] = []
 
 @export var drop_offset: Vector2 = Vector2(0, -8)
@@ -33,11 +35,18 @@ func _ready() -> void:
 	# Ensure overlap checks work reliably
 	contact_area.monitoring = true
 	contact_area.monitorable = true
+	if not contact_area.body_entered.is_connected(_on_contact_body_entered):
+		contact_area.body_entered.connect(_on_contact_body_entered)
+
+	if not contact_area.body_exited.is_connected(_on_contact_body_exited):
+		contact_area.body_exited.connect(_on_contact_body_exited)
 
 	_apply_definition()
 
 	health = max_health
 	emit_signal("health_changed", health, max_health)
+
+
 
 func _apply_definition() -> void:
 	if npc_def == null:
@@ -50,7 +59,7 @@ func _apply_definition() -> void:
 	max_health = npc_def.max_health
 	move_speed = npc_def.move_speed
 	stop_distance = npc_def.stop_distance
-	contact_damage_per_second = npc_def.contact_damage_per_second
+	contact_damage = npc_def.contact_damage
 	drops = npc_def.drops
 
 	# Optional sprite convenience
@@ -63,7 +72,7 @@ func _physics_process(delta: float) -> void:
 	_apply_gravity(delta)
 	_chase_player_x()
 	move_and_slide()
-	_apply_contact_damage(delta)
+	apply_contact_damage(delta)
 
 func _apply_gravity(delta: float) -> void:
 	if not is_on_floor():
@@ -80,23 +89,19 @@ func _chase_player_x() -> void:
 	else:
 		velocity.x = signf(dx) * move_speed
 
-func _apply_contact_damage(delta: float) -> void:
-	var bodies := contact_area.get_overlapping_bodies()
+func apply_contact_damage(delta: float) -> void:
+	if _touching_target == null or not is_instance_valid(_touching_target):
+		_touching_target = null
+		_contact_timer = 0.0
+		return
 
-	var target: Node = null
-	for b in bodies:
-		if b != null and is_instance_valid(b) and b.has_method("take_damage"):
-			target = b
-			break
+	_contact_timer += delta
 
-	if target != null:
-		_damage_accumulator += contact_damage_per_second * delta
-		var whole := int(_damage_accumulator)
-		if whole > 0:
-			target.call("take_damage", whole)
-			_damage_accumulator -= float(whole)
-	else:
-		_damage_accumulator = 0.0
+	while _contact_timer >= contact_damage_interval:
+		_touching_target.call("take_damage", contact_damage)
+		_contact_timer -= contact_damage_interval
+
+
 
 func take_damage(amount: int) -> void:
 	health = max(health - amount, 0)
@@ -170,3 +175,14 @@ func _spawn_pickup_deferred(entry: DropEntry, qty: int) -> void:
 
 	parent.call_deferred("add_child", pickup)
 	pickup.set_deferred("global_position", final_pos)
+
+func _on_contact_body_entered(body: Node) -> void:
+	# If you want to be stricter, check group "player" instead.
+	if body != null and is_instance_valid(body) and body.has_method("take_damage"):
+		_touching_target = body
+		_contact_timer = 0.0
+
+func _on_contact_body_exited(body: Node) -> void:
+	if body == _touching_target:
+		_touching_target = null
+		_contact_timer = 0.0

@@ -16,3 +16,4 @@ class_name NPCDefinition
 @export var sprite_scale: Vector2 = Vector2(1, 1)
 
 @export var drops: Array[DropEntry] = []
+@export var coin_drops: Array[CoinDropEntry] = []

@@ -8,9 +8,15 @@ extends CharacterBody2D
 @export var gravity: float = 1200.0
 
 var _auto_fire_enabled: bool = false
+
+# Item management
 var _nearby_pickups: Array[ItemPickup] = []
+signal coins_changed(coins: int)
+
+var coins: int = 0
 
 
+# Health management
 signal health_changed(current: int, max: int)
 @export var max_health: int = 100
 var health: int
@@ -110,3 +116,10 @@ func heal(amount: int) -> void:
 func die() -> void:
 	print("Player died")
 	queue_free()
+
+func add_coins(amount: int) -> void:
+	if amount <= 0:
+		return
+	coins += amount
+	emit_signal("coins_changed", coins)
+	print("Coins:", coins)

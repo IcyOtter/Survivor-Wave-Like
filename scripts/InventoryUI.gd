@@ -1,5 +1,6 @@
 extends Panel
 
+@onready var coins_label: Label = $VBoxContainer/CoinsLabel
 @onready var weapon_list: ItemList = $VBoxContainer/WeaponList
 @onready var hint_label: Label = $VBoxContainer/HintLabel
 @onready var equip_button: Button = $VBoxContainer/ButtonsRow/EquipButton
@@ -9,6 +10,7 @@ extends Panel
 
 var _weapon_manager: WeaponManager = null
 var _equipment_ui: Node = null
+var _player: Node = null
 
 func _ready() -> void:
 	visible = false
@@ -23,11 +25,9 @@ func _ready() -> void:
 	if not weapon_list.item_selected.is_connected(_on_item_selected):
 		weapon_list.item_selected.connect(_on_item_selected)
 
-	if not weapon_list.item_activated.is_connected(_on_item_activated):
-		weapon_list.item_activated.connect(_on_item_activated)
-
 	_equipment_ui = get_node_or_null(equipment_panel_path)
-	_bind_weapon_manager()
+
+	_bind_player_and_weapon_manager()
 	_refresh()
 
 func _process(_delta: float) -> void:
@@ -39,13 +39,13 @@ func _process(_delta: float) -> void:
 	if visible and Input.is_action_just_pressed("ui_cancel"):
 		visible = false
 
-func _bind_weapon_manager() -> void:
-	var player := get_tree().get_first_node_in_group("player")
-	if player == null:
+func _bind_player_and_weapon_manager() -> void:
+	_player = get_tree().get_first_node_in_group("player")
+	if _player == null:
 		push_warning("InventoryUI: Player not found in group 'player'.")
 		return
 
-	_weapon_manager = player.get_node_or_null("WeaponManager") as WeaponManager
+	_weapon_manager = _player.get_node_or_null("WeaponManager") as WeaponManager
 	if _weapon_manager == null:
 		push_warning("InventoryUI: WeaponManager not found under Player.")
 		return
@@ -53,18 +53,28 @@ func _bind_weapon_manager() -> void:
 	if not _weapon_manager.inventory_updated.is_connected(_on_inventory_updated):
 		_weapon_manager.inventory_updated.connect(_on_inventory_updated)
 
+	# Bind coins signal (live updates)
+	if _player.has_signal("coins_changed"):
+		if not _player.coins_changed.is_connected(_on_coins_changed):
+			_player.coins_changed.connect(_on_coins_changed)
+
 	print("InventoryUI: Bound to WeaponManager successfully.")
 
 func _on_inventory_updated() -> void:
 	_refresh()
 
+func _on_coins_changed(_coins: int) -> void:
+	# If inventory is closed, you can still update; it’s cheap.
+	_refresh_coins()
+
 func _refresh() -> void:
+	_refresh_coins()
+
 	weapon_list.clear()
 
 	if _weapon_manager == null or _weapon_manager.inventory == null:
 		hint_label.text = "Inventory not available."
 		equip_button.disabled = true
-		equip_button.text = "Equip"
 		return
 
 	var inv := _weapon_manager.inventory
@@ -74,44 +84,43 @@ func _refresh() -> void:
 		var qty := inv.get_item_qty(i)
 		weapon_list.add_item("%s  x%d" % [item_name, qty])
 
-	# Button enable + label based on selection
-	_update_equip_button_state()
-
-	# Equipped status
-	var weapon_text := "(none)"
-	if inv.has_equipped_weapon():
-		weapon_text = inv.get_equipped_weapon_name()
-
-
-	hint_label.text = "Items: %d | Weapon: %s" % [inv.items.size(), weapon_text]
-
-func _on_item_selected(_index: int) -> void:
-	_update_equip_button_state()
-
-func _update_equip_button_state() -> void:
-	if _weapon_manager == null or _weapon_manager.inventory == null:
-		equip_button.disabled = true
-		equip_button.text = "Equip"
-		return
-
-	var inv := _weapon_manager.inventory
+	# Enable equip only if something is selected (weapon or ammo)
 	var selected := weapon_list.get_selected_items()
 	if selected.is_empty():
 		equip_button.disabled = true
-		equip_button.text = "Equip"
+	else:
+		var t := inv.get_item_type(selected[0])
+		equip_button.disabled = not (t == "weapon" or t == "ammo")
+
+	var equipped_text := "(none)"
+	if inv.has_equipped_weapon():
+		equipped_text = inv.get_equipped_weapon_name()
+
+	hint_label.text = "Items: %d | Equipped: %s" % [inv.items.size(), equipped_text]
+
+func _refresh_coins() -> void:
+	if coins_label == null:
+		return
+	if _player == null or not is_instance_valid(_player):
+		coins_label.text = "Coins: 0"
 		return
 
-	var index := selected[0]
-	var t := inv.get_item_type(index)
+	# Use property if present; fallback to method if you added get_coins()
+	var coins_value: int = 0
+	if "coins" in _player:
+		coins_value = int(_player.get("coins"))
+	elif _player.has_method("get_coins"):
+		coins_value = int(_player.call("get_coins"))
 
-	var can_equip := (t == "weapon")
-	equip_button.disabled = not can_equip
+	coins_label.text = "Coins: %d" % coins_value
 
-	# Optional UX: change button text based on item type
-	if t == "weapon":
-		equip_button.text = "Equip Weapon"
-	else:
-		equip_button.text = "Equip"
+func _on_item_selected(index: int) -> void:
+	if _weapon_manager == null or _weapon_manager.inventory == null:
+		equip_button.disabled = true
+		return
+
+	var t := _weapon_manager.inventory.get_item_type(index)
+	equip_button.disabled = not (t == "weapon" or t == "ammo")
 
 func _on_equip_pressed() -> void:
 	if _weapon_manager == null or _weapon_manager.inventory == null:
@@ -131,36 +140,15 @@ func _on_equip_pressed() -> void:
 
 	if t == "weapon":
 		_weapon_manager.equip_from_inventory(index)
+	elif t == "ammo":
+		_weapon_manager.equip_ammo_from_inventory(index)
 	else:
 		push_warning("Equip: Unsupported item type: %s" % t)
-		return
-
-	# Open equipment panel (optional)
-	if _equipment_ui != null and _equipment_ui.has_method("open"):
-		_equipment_ui.call("open")
-
-	# Refresh UI (note: inventory_changed will also trigger refresh via signal)
-	_refresh()
-
-func _on_item_activated(index: int) -> void:
-	if _weapon_manager == null or _weapon_manager.inventory == null:
-		return
-
-	var inv := _weapon_manager.inventory
-	var t := inv.get_item_type(index)
-
-	# Only equip weapons (per your current simplified system)
-	if t != "weapon":
-		return
-
-	_weapon_manager.equip_from_inventory(index)
-
-	# Optional: open equipment panel
-	if _equipment_ui != null and _equipment_ui.has_method("open"):
-		_equipment_ui.call("open")
 
 	_refresh()
 
+	if _equipment_ui != null and _equipment_ui.has_method("open"):
+		_equipment_ui.call("open")
 
 func _on_close_pressed() -> void:
 	visible = false

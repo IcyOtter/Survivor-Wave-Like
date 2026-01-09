@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://dy3jk71n1bylw"]
+
+[ext_resource type="Script" uid="uid://bwglg16woe87f" path="res://scenes/CoinPickup.gd" id="1_3ijga"]
+[ext_resource type="Texture2D" uid="uid://bnguo1msekngw" path="res://items/currencies/Coin.png" id="1_4asle"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3ijga"]
+radius = 6.0
+
+[node name="CoinPickup" type="Area2D"]
+script = ExtResource("1_3ijga")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1.9073486e-06, 1.9073486e-06)
+scale = Vector2(0.34375, 0.34375)
+texture = ExtResource("1_4asle")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -1)
+shape = SubResource("CircleShape2D_3ijga")

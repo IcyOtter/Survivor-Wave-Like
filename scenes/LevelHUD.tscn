@@ -6,13 +6,13 @@
 script = ExtResource("1_0ycnv")
 
 [node name="Panel" type="PanelContainer" parent="."]
-anchors_preset = -1
+anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 734.0
-offset_top = -629.0
-offset_right = 934.0
-offset_bottom = -544.0
+offset_left = 627.0
+offset_top = -621.0
+offset_right = 827.0
+offset_bottom = -536.0
 grow_vertical = 0
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]

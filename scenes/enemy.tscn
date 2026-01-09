@@ -1,8 +1,17 @@
-[gd_scene load_steps=6 format=3 uid="uid://bn3wlq2aob8k0"]
+[gd_scene load_steps=7 format=3 uid="uid://bn3wlq2aob8k0"]
 
 [ext_resource type="Script" uid="uid://t251hpwfilyd" path="res://scripts/Enemy Scripts/BaseEnemy.gd" id="1_md0e3"]
-[ext_resource type="Texture2D" uid="uid://bfnao0om1m8kk" path="res://assets/enemies/slime.png" id="2_4ra3w"]
 [ext_resource type="Script" uid="uid://c0xeprhbprjvv" path="res://scripts/Enemy Scripts/EnemyHealthBar.gd" id="2_5uy6h"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5uy6h"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4ra3w"]
+bg_color = Color(0.9411765, 0.11764706, 0, 1)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_md0e3"]
 size = Vector2(41, 41)
@@ -10,7 +19,7 @@ size = Vector2(41, 41)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4ra3w"]
 size = Vector2(44, 32.666664)
 
-[node name="Enemy" type="CharacterBody2D"]
+[node name="Enemy_Template" type="CharacterBody2D"]
 collision_layer = 8
 collision_mask = 5
 script = ExtResource("1_md0e3")
@@ -21,14 +30,16 @@ offset_left = -25.0
 offset_top = -55.0
 offset_right = 25.0
 offset_bottom = -50.0
+theme_override_styles/background = SubResource("StyleBoxFlat_5uy6h")
+theme_override_styles/fill = SubResource("StyleBoxFlat_4ra3w")
 max_value = 20.0
 value = 20.0
 show_percentage = false
 script = ExtResource("2_5uy6h")
+hide_when_full = false
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(0, -32)
-texture = ExtResource("2_4ra3w")
 
 [node name="DamageArea" type="CollisionShape2D" parent="."]
 position = Vector2(0.5, -21)

@@ -33,7 +33,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	# Toggle with the same action as inventory (Tab)
-	if Input.is_action_just_pressed("toggle_inventory"):
+	if Input.is_action_just_pressed("toggle_equipment"):
 		panel.visible = not panel.visible
 		if panel.visible:
 			_refresh()

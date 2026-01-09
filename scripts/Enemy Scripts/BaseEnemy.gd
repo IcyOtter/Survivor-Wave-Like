@@ -23,6 +23,7 @@ var stop_distance: float = 18.0
 var _touching_target: Node = null
 var _contact_timer: float = 0.0
 var drops: Array[DropEntry] = []
+var coin_drops: Array[CoinDropEntry] = []
 
 @export var drop_offset: Vector2 = Vector2(0, -8)
 @export var drop_raycast_distance: float = 200.0
@@ -61,6 +62,7 @@ func _apply_definition() -> void:
 	stop_distance = npc_def.stop_distance
 	contact_damage = npc_def.contact_damage
 	drops = npc_def.drops
+	coin_drops = npc_def.coin_drops
 
 	# Optional sprite convenience
 	if sprite != null:
@@ -111,6 +113,7 @@ func take_damage(amount: int) -> void:
 
 func die() -> void:
 	_try_drop_loot()
+	_try_drop_coins()
 
 		# Award XP (total + range skill for now)
 	if npc_def != null and npc_def.xp_reward > 0:
@@ -175,6 +178,65 @@ func _spawn_pickup_deferred(entry: DropEntry, qty: int) -> void:
 
 	parent.call_deferred("add_child", pickup)
 	pickup.set_deferred("global_position", final_pos)
+
+func _try_drop_coins() -> void:
+	if coin_drops.is_empty():
+		return
+
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.randomize()
+
+	for entry: CoinDropEntry in coin_drops:
+		if entry == null:
+			continue
+		if entry.coin_pickup_scene == null:
+			continue
+
+		if rng.randf() <= entry.chance:
+			var min_v: int = maxi(entry.min_value, 0)
+			var max_v: int = maxi(entry.max_value, min_v)
+			var value: int = rng.randi_range(min_v, max_v)
+
+			# Defer spawn to avoid physics flush issues (same as your item drop)
+			call_deferred("_spawn_coin_pickup_deferred", entry, value)
+			# If you only want ONE coin drop entry max, you can break here:
+			# break
+
+func _spawn_coin_pickup_deferred(entry: CoinDropEntry, value: int) -> void:
+	var coin := entry.coin_pickup_scene.instantiate()
+	if coin == null:
+		push_warning("Enemy coin drop: failed to instantiate coin_pickup_scene.")
+		return
+
+	# Standardized API: CoinPickup.gd implements set_value(v)
+	if coin.has_method("set_value"):
+		coin.call("set_value", value)
+	else:
+		push_warning("Enemy coin drop: coin pickup scene script is missing set_value(v).")
+
+	# Ground placement (same as your item drop)
+	var start_pos := global_position + Vector2(0, -16)
+
+	var space := get_world_2d().direct_space_state
+	var query := PhysicsRayQueryParameters2D.create(
+		start_pos,
+		start_pos + Vector2(0, 800)
+	)
+	query.collision_mask = GROUND_MASK
+	query.exclude = [self]
+
+	var result := space.intersect_ray(query)
+
+	var final_pos := start_pos
+	if result.size() > 0:
+		final_pos = result["position"] - Vector2(0, drop_clearance)
+
+	var parent := get_parent()
+	if parent == null:
+		parent = get_tree().current_scene
+
+	parent.call_deferred("add_child", coin)
+	coin.set_deferred("global_position", final_pos)
 
 func _on_contact_body_entered(body: Node) -> void:
 	# If you want to be stricter, check group "player" instead.

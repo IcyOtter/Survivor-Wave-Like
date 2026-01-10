@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://bricsnrakdnth" path="res://scripts/WeaponManager.gd" id="2_dqkch"]
 [ext_resource type="Texture2D" uid="uid://d18a35ch3wai7" path="res://assets/player/pixelplayer.png" id="2_g2els"]
 [ext_resource type="Script" uid="uid://bdfvny2l3xmqp" path="res://scripts/ItemDefinition.gd" id="4_qlg0r"]
-[ext_resource type="Resource" uid="uid://bbyoc5thmj6ny" path="res://items/weapons/BasicBow/BasicBow.tres" id="5_tuyoq"]
+[ext_resource type="Resource" uid="uid://dcwnuv7u8pus6" path="res://items/weapons/BasicSword/BasicSword.tres" id="6_fjrip"]
 [ext_resource type="PackedScene" uid="uid://4ewapt1weyo" path="res://scenes/ItemPickup.tscn" id="6_tuyoq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tuyoq"]
@@ -32,7 +32,7 @@ shape = SubResource("CircleShape2D_qhqgy")
 
 [node name="WeaponManager" type="Node2D" parent="."]
 script = ExtResource("2_dqkch")
-starting_items = Array[ExtResource("4_qlg0r")]([ExtResource("5_tuyoq")])
+starting_items = Array[ExtResource("4_qlg0r")]([ExtResource("6_fjrip")])
 item_pickup_scene = ExtResource("6_tuyoq")
 
 [node name="WeaponSocket" type="Node2D" parent="."]

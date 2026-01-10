@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3 uid="uid://bbyoc5thmj6ny"]
 
-[ext_resource type="Texture2D" uid="uid://cdyiu066hlucs" path="res://assets/weapons/basic bow/basicbow.png" id="1_myamn"]
+[ext_resource type="Texture2D" uid="uid://cdyiu066hlucs" path="res://items/weapons/BasicBow/basicbow.png" id="1_myamn"]
 [ext_resource type="PackedScene" uid="uid://d1asvcs5n4um5" path="res://items/weapons/BasicBow/BasicArrow.tscn" id="2_7bjpb"]
 [ext_resource type="Script" uid="uid://bdfvny2l3xmqp" path="res://scripts/ItemDefinition.gd" id="3_ydag1"]
 [ext_resource type="PackedScene" uid="uid://dorne3gevs8gq" path="res://items/weapons/BasicBow/BasicBow.tscn" id="4_g82io"]
